@@ -12,7 +12,6 @@ import {
   ModalDescription,
   Icon,
   Dropdown,
- 
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -47,6 +46,10 @@ const AddNewBook = () => {
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
   const [selectedGenresId, setSelectedGenresId] = useState(null);
   const [allBooks, setAllBooks] = useState([]);
+  const [isbnNo, setIsbnNo] = useState([]);
+  const [description, setDescription] = useState([]);
+  const [coverPage, setCoverPage] = useState([]);
+ 
 
   useEffect(() => {
     fetchBooks();
@@ -102,6 +105,9 @@ const AddNewBook = () => {
             genre_id: selectedGenresId,
             price: price,
             publication_date: pdate,
+            ISBN: isbnNo,
+            imageURL: coverPage,
+            description: description,
           }
         );
         console.log("Updated Book:", response.data);
@@ -124,6 +130,9 @@ const AddNewBook = () => {
           genre_id: selectedGenresId,
           price: price,
           publication_date: pdate,
+          ISBN: isbnNo,
+          imageURL: coverPage,
+          description: description,
         });
         console.log("Added new Book:", response.data);
         fetchBooks();
@@ -259,6 +268,7 @@ const AddNewBook = () => {
       console.error("Error fetching genres:", error);
     }
   };
+  
 
   return (
     <div>
@@ -296,7 +306,12 @@ const AddNewBook = () => {
                 </div>
               </div>
             </div>
-            <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal
+              open={open}
+              onClose={() => setOpen(false)}
+              size="small"
+              style={{ height: "80vh" }}
+            >
               <ModalHeader>
                 {selectedBook ? "Edit Book" : "Add New Book"}
               </ModalHeader>
@@ -346,14 +361,43 @@ const AddNewBook = () => {
                         onChange={(date) => setPdate(date)}
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Select Publication Date"
-                        
+                        className="custom-datepicker"
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <input
+                        placeholder="Enter ISBN"
+                        value={isbnNo}
+                        onChange={(e) => setIsbnNo(e.target.value)}
                       />
                     </Form.Field>
                     <Form.Field>
                       <TextArea
-                        placeholder="Enter Price"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
+                        placeholder="Enter Description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <div class="ui right labeled input">
+                        <label for="amount" class="ui label">
+                          $
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Amount"
+                          id="amount"
+                          value={price}
+                          onChange={(e) => setPrice(e.target.value)}
+                        ></input>
+                        <div class="ui basic label">.00</div>
+                      </div>
+                    </Form.Field>
+                    <Form.Field>
+                      <input
+                        placeholder="Image URL"
+                        value={coverPage}
+                        onChange={(e) => setCoverPage(e.target.value)}
                       />
                     </Form.Field>
                     <Button color="green" type="submit">

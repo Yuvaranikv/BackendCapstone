@@ -65,10 +65,10 @@ router.get("/:id", async (req, res) => {
 // Add a new book
 router.post("/add", async (req, res) => {
   try {
-    const { title, author_id, genre_id, price, publication_date } = req.body;
+    const { title, author_id, genre_id, price, publication_date,ISBN,imageURL,description } = req.body;
 
     // Basic input validation
-    if (!title || !author_id || !genre_id || !price || !publication_date) {
+    if (!title || !author_id || !genre_id || !price || !publication_date||!ISBN||!imageURL||!description) {
       return res.status(400).send("All fields are required");
     }
     // Further validation for price, publication_date format, etc., can be added
@@ -79,6 +79,9 @@ router.post("/add", async (req, res) => {
       genre_id,
       price,
       publication_date,
+      ISBN,
+      imageURL,
+      description,
     });
 
     res.status(201).json(newBook);
@@ -92,10 +95,10 @@ router.post("/add", async (req, res) => {
 router.put("/edit/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, author_id, genre_id, price, publication_date } = req.body;
+    const { title, author_id, genre_id, price, publication_date,ISBN,imageURL,description } = req.body;
 
     // Basic input validation
-    if (!title || !author_id || !genre_id || !price || !publication_date) {
+    if (!title || !author_id || !genre_id || !price || !publication_date ||!ISBN||!imageURL||!description) {
       return res.status(400).send("All fields are required");
     }
     // Further validation for price, publication_date format, etc., can be added
@@ -111,6 +114,9 @@ router.put("/edit/:id", async (req, res) => {
       genre_id,
       price,
       publication_date,
+      ISBN,
+      imageURL,
+      description,
     });
 
     res.json(book);

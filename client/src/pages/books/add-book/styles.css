@@ -40,5 +40,11 @@
 }
 
  
-   
+.custom-datepicker {
+  width: 380%!important ;/* Adjust width as needed */
+  height: 38px; /* Increase height to match other fields */
+  font-size: 14px; /* Adjust font size */
+  padding: 8px; /* Adjust padding */
+}
+
  

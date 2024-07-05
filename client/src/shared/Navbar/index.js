@@ -5,6 +5,7 @@ import 'semantic-ui-css/semantic.min.css';
 import './styles.css';
 import { useNavigate } from 'react-router-dom';
 
+
 const Navbar = () => {
   const navigate = useNavigate();
 
@@ -19,6 +20,17 @@ const Navbar = () => {
     navigate('/authors/list');
   }
   const handleGenesClick=() =>{
+    navigate('/genres/list');
+  }
+
+  const handlePurchaseClick=() =>{
+    navigate('/books/list');
+  }
+
+  const handleSalesClick=() =>{
+    navigate('/authors/list');
+  }
+  const handleReportsClick=() =>{
     navigate('/genres/list');
   }
   return (
@@ -49,7 +61,22 @@ const Navbar = () => {
           <Icon name="book" />
           Genres
         </Menu.Item>
-       
+        <Menu.Item as="a" onClick={handlePurchaseClick}>
+        <i class="shopping cart icon"></i>
+          Purchase
+        </Menu.Item>
+        <Menu.Item as="a" onClick={handleSalesClick}>
+       <Icon name="arrow down cart"></Icon>
+          Sales
+        </Menu.Item>
+        <Menu.Item as="a" onClick={handleReportsClick}>
+        <Icon name="chart line" />
+          Reports
+        </Menu.Item>
+        <Menu.Item as="a" onClick={handleHomeClick}>
+        <Icon name="sign-out" />
+          Sign-out
+        </Menu.Item>
       </div>
     </Sidebar>
   );

@@ -33,8 +33,7 @@ const Book = sequelize.define(
         model: "authors",
         key: "author_id",
       },
-      onDelete: "SET NULL",
-    },
+     },
     genre_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -56,6 +55,21 @@ const Book = sequelize.define(
     },
     publication_date: {
       type: DataTypes.DATE,
+      allowNull: true,
+    },
+    ISBN: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    imageURL: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        isUrl: true,
+      },
+    },
+    description: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     isActive: {

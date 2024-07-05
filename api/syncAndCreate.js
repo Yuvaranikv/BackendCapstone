@@ -3,6 +3,8 @@ const Author = require('./models/Author');
 const Book = require('./models/Book');
 const Genre = require('./models/Genres');
 const User = require('./models/User');
+const Purchase = require('./models/Purchase');
+const Sales = require('./models/Sales');
 require('./config/associations'); // Ensure associations are loaded
 
 async function syncAndCreate() {
@@ -66,26 +68,27 @@ async function syncAndCreate() {
     console.log('Genres created:', genres.map(genre => genre.toJSON()));
 
     const booksData = [
-      { title: 'Harry Potter and the Sorcerer\'s Stone', author_id: 1, genre_id: 1, price: 19.99, publication_date: '1997-06-26', isActive: true },
-      { title: 'A Game of Thrones', author_id: 2, genre_id: 1, price: 25.99, publication_date: '1996-08-06', isActive: true },
-      { title: 'The Fellowship of the Ring', author_id: 3, genre_id: 1, price: 22.99, publication_date: '1954-07-29', isActive: true },
-      { title: 'Murder on the Orient Express', author_id: 4, genre_id: 3, price: 15.99, publication_date: '1934-01-01', isActive: true },
-      { title: 'The Shining', author_id: 5, genre_id: 6, price: 18.99, publication_date: '1977-01-28', isActive: true },
-      { title: 'Foundation', author_id: 6, genre_id: 2, price: 21.99, publication_date: '1951-05-01', isActive: true },
-      { title: 'The Adventures of Tom Sawyer', author_id: 7, genre_id: 10, price: 14.99, publication_date: '1876-06-01', isActive: true },
-      { title: 'The Old Man and the Sea', author_id: 8, genre_id: 12, price: 12.99, publication_date: '1952-09-01', isActive: true },
-      { title: 'Pride and Prejudice', author_id: 9, genre_id: 5, price: 16.99, publication_date: '1813-01-28', isActive: true },
-      { title: 'A Tale of Two Cities', author_id: 10, genre_id: 7, price: 17.99, publication_date: '1859-01-01', isActive: true },
-      { title: 'The Great Gatsby', author_id: 11, genre_id: 11, price: 14.99, publication_date: '1925-04-10', isActive: true },
-      { title: 'To Kill a Mockingbird', author_id: 12, genre_id: 12, price: 15.99, publication_date: '1960-07-11', isActive: true },
-      { title: 'One Hundred Years of Solitude', author_id: 13, genre_id: 14, price: 18.99, publication_date: '1967-06-05', isActive: true },
-      { title: 'The War of the Worlds', author_id: 14, genre_id: 2, price: 13.99, publication_date: '1898-01-01', isActive: true },
-      { title: 'Sherlock Holmes: The Complete Novels and Stories', author_id: 15, genre_id: 3, price: 25.99, publication_date: '1927-01-01', isActive: true },
-      { title: 'War and Peace', author_id: 16, genre_id: 7, price: 20.99, publication_date: '1869-01-01', isActive: true },
-      { title: 'Crime and Punishment', author_id: 17, genre_id: 7, price: 19.99, publication_date: '1866-01-01', isActive: true },
-      { title: 'Frankenstein', author_id: 18, genre_id: 6, price: 12.99, publication_date: '1818-01-01', isActive: true },
-      { title: 'Dracula', author_id: 19, genre_id: 6, price: 13.99, publication_date: '1897-01-01', isActive: true },
-      { title: 'The Iliad', author_id: 20, genre_id: 11, price: 22.99, publication_date: '800-01-01', isActive: true }
+      { 
+        title: 'Harry Potter and the Sorcerer\'s Stone', 
+        author_id: 1, 
+        genre_id: 1, 
+        price: 19.99, 
+        publication_date: '1997-06-26', 
+        ISBN: '9780590353427',
+        imageURL: 'https://example.com/harry_potter.jpg',
+        description: 'The first book in the Harry Potter series by J.K. Rowling.'
+      },
+      { 
+        title: 'A Game of Thrones', 
+        author_id: 2, 
+        genre_id: 1, 
+        price: 25.99, 
+        publication_date: '1996-08-06', 
+        ISBN: '9780553381689',
+        imageURL: 'https://example.com/game_of_thrones.jpg',
+        description: 'The first book in the A Song of Ice and Fire series by George R.R. Martin.'
+      },
+      // Add more books with ISBN, rating, imageURL, and description as needed
     ];
 
     const books = await Book.bulkCreate(booksData);
