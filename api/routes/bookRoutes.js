@@ -5,7 +5,9 @@ const Book = require('../models/Book');
 // List all books
 router.get('/', async (req, res) => {
   try {
-    const books = await Book.findAll();
+    const books = await Book.findAll({
+      where :{ isActive: true }
+    } );
     res.json(books);
   } catch (err) {
     console.error('Error retrieving books:', err);

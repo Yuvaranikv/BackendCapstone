@@ -1,0 +1,22 @@
+/* src/pages/AuthorsList.css */
+.add-author-button-container {
+   
+   width: 160px;
+    margin-top: 20px; /* Adjust the value as needed */
+   align-items: right;
+   text-align: right;
+  }
+  
+  .ui.table thead th {
+    background-color:gray !important; /* Change this to your desired color */
+   
+  }
+
+  .ui.search {
+   
+    display: flex;
+   width: 160px;
+    margin-top: 20px; /* Adjust the value as needed */
+   align-items: left;
+   text-align: left;
+  }

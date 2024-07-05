@@ -1,18 +1,31 @@
 const express=require('express');
 const router=express.Router();
 const Author=require('../models/Author');
+const Book=require('../models/Book');
 
-//List all authors
-router.get('/',async(req,res)=>{
-    try{
-        const authors=await Author.findAll();
-        res.json(authors);
-    }
-    catch(err)
-    {
-        console.error('Error retrieving authors',err)
-        res.status(500).send('Error retrieving authors:');
-    }
+router.get('/', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;  // Default to page 1 if not provided
+  const limit = parseInt(req.query.limit) || 10; // Default limit to 10 items per page
+
+  try {
+    const offset = (page - 1) * limit;
+    const authors = await Author.findAll({
+      where: { isActive: true },
+      offset: offset,
+      limit: limit
+          });
+ // Fetch total count of authors
+ const totalAuthorsCount = await Author.count();
+
+ res.json({
+  authors: authors,
+  totalCount: totalAuthorsCount
+});
+}
+   catch (err) {
+    console.error('Error retrieving authors', err);
+    res.status(500).send('Error retrieving authors');
+  }
 });
 
 //Get author by ID
@@ -35,7 +48,7 @@ router.get('/:id',async(req,res)=>{
 
 
 // Add a new author
-router.post('/', async (req, res) => {
+router.post('/add', async (req, res) => {
     try {
       const { name,biography } = req.body;
       //Validate input
@@ -55,7 +68,7 @@ router.post('/', async (req, res) => {
   });
 
 // Update an author
-router.put('/:id', async (req, res) => {
+router.put('/edit/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const { name,biography } = req.body;
@@ -81,21 +94,31 @@ router.put('/:id', async (req, res) => {
   });
 
 
-  // Delete a author
-  router.delete('/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const author = await Author.findByPk(id);
+  // Soft delete an author
+router.delete('/delete/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const author = await Author.findByPk(id);
   
-      if (!author) {
-        return res.status(404).send('Author not found');
-      }
-  
-      await author.destroy();
-      res.send('Author deleted successfully');
-    } catch (err) {
-      console.error('Error deleting author:', err);
-      res.status(500).send('Error deleting author');
+    if (!author) {
+      return res.status(404).send('Author not found');
     }
-  });
+  
+    // Set isActive to false
+    author.isActive = false;
+    await author.save();
+  
+    // Optionally, you can also set isActive to false for related books
+    await Book.update(
+      { isActive: false },
+      { where: { author_id: id } }
+    );
+  
+    res.send('Author and related books deactivated successfully');
+  } catch (err) {
+    console.error('Error deactivating author:', err);
+    res.status(500).send('Error deactivating author');
+  }
+});
+
 module.exports = router;

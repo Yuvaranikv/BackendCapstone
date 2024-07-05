@@ -1,5 +1,8 @@
+// models/Book.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
+const Author = require("./Author");
+const Genre = require("./Genres");
 
 const Book = sequelize.define(
   "Book",
@@ -8,9 +11,10 @@ const Book = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
     },
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
       validate: {
         notNull: {
@@ -26,37 +30,42 @@ const Book = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "Authors",
-        key: "author_id", // Primary key in the referenced table
+        model: "authors",
+        key: "author_id",
       },
+      onDelete: "SET NULL",
     },
     genre_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "Genres", // Name of the referenced table
-        key: "genre_id", // Primary key in the referenced table
+        model: "Genres",
+        key: "genre_id",
       },
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,        // If nullable in the database
+      allowNull: true,
       validate: {
         isDecimal: true,
         min: {
           args: [0],
-          msg: 'Price must be a positive number'
-        }
-      }
+          msg: "Price must be a positive number",
+        },
+      },
     },
     publication_date: {
       type: DataTypes.DATE,
-      allowNull: true, // If nullable in the database
+      allowNull: true,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {
-    tableName: "books", // Specify the actual table name if different from the model name
-    timestamps: false, // If your table doesn't have createdAt and updatedAt columns
+    tableName: "books",
   }
 );
 
