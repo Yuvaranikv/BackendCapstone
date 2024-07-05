@@ -1,21 +1,464 @@
-import React from "react";
-import "semantic-ui-css/semantic.min.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
-  Form,
-  Button,
+  Table,
   Grid,
-  Header,
-  Segment,
-  Container,
-  } from "semantic-ui-react";
+  Button,
+  Modal,
+  Form,
+  TextArea,
+  ModalHeader,
+  ModalContent,
+  ModalDescription,
+  Icon,
+  Dropdown,
+ 
+} from "semantic-ui-react";
+import "semantic-ui-css/semantic.min.css";
+import Navbar from "../../../shared/Navbar";
+import BookHeader from "../../../shared/Header";
+import { useNavigate } from "react-router-dom";
+import "./styles.css";
+import Footer from "../../../shared/Footer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import _ from "lodash";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const AddNewBook = () => {
+  const [books, setBooks] = useState([]);
+  const [bookName, setBookName] = useState("");
+  const [price, setPrice] = useState("");
+  const [pdate, setPdate] = useState("");
+  const [selectedBook, setSelectedBook] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5); // Adjust based on your backend limit
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+  const [deleteBookId, setDeleteBookId] = useState(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [direction, setDirection] = useState(null);
+  const [authors, setAuthors] = useState([]);
+  const [genres, setGenres] = useState([]);
+  const [selectedAuthorId, setSelectedAuthorId] = useState(null);
+  const [selectedGenresId, setSelectedGenresId] = useState(null);
+  const [allBooks, setAllBooks] = useState([]);
+
+  useEffect(() => {
+    fetchBooks();
+    fetchAuthors();
+    fetchGenres();
+    fetchAllBooks();
+  }, [page]); // Reload books when currentPage changes
+
+  const fetchAllBooks = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/books/all`);
+      setAllBooks(response.data.authors); // Store all books in state
+    } catch (error) {
+      console.error("Error fetching all books:", error);
+    }
+  };
+
+  const fetchBooks = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/books?page=${page}&limit=${pageSize}`
+      );
+
+      const { books, totalCount } = response.data;
+
+      setBooks(books);
+      setFilteredBooks(books);
+      const totalPagesCount = Math.ceil(totalCount / pageSize);
+      setTotalPages(totalPagesCount);
+      console.log(totalCount);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+  };
+
+  const handlePrevPage = () => {
+    setPage(page - 1);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (selectedBook) {
+      try {
+        const response = await axios.put(
+          `http://localhost:3000/books/edit/${selectedBook.book_id}`,
+          {
+            title: bookName,
+            author_id: selectedAuthorId,
+            genre_id: selectedGenresId,
+            price: price,
+            publication_date: pdate,
+          }
+        );
+        console.log("Updated Book:", response.data);
+        fetchBooks();
+        setBookName("");
+        setPrice("");
+        setPdate(null);
+        setSelectedBook(null);
+        setOpen(false);
+        toast.success("Book updated successfully");
+      } catch (error) {
+        console.error("Error updating Book:", error);
+        toast.error("Error updating Book");
+      }
+    } else {
+      try {
+        const response = await axios.post("http://localhost:3000/books/add/", {
+          title: bookName,
+          author_id: selectedAuthorId,
+          genre_id: selectedGenresId,
+          price: price,
+          publication_date: pdate,
+        });
+        console.log("Added new Book:", response.data);
+        fetchBooks();
+        setBookName("");
+        setPrice("");
+        setPdate(null);
+        setOpen(false);
+        toast.success("Book added successfully");
+      } catch (error) {
+        console.error("Error adding Book:", error);
+        toast.error("Error adding Book");
+      }
+    }
+  };
+
+  const handleEditButtonClick = (book) => {
+    setSelectedBook(book);
+    setBookName(book.title);
+    setSelectedAuthorId(book.author_id);
+    setSelectedGenresId(book.genre_id);
+    setPdate(book.publication_date);
+    setPrice(book.price);
+    setOpen(true);
+  };
+
+  const handleDeleteButtonClick = async (book) => {
+    setDeleteBookId(book.book_id);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/books/delete/${deleteBookId}`);
+      console.log("Deleted Book");
+      toast.success("Book deleted successfully");
+      fetchBooks();
+      setConfirmOpen(false); // Close confirmation modal after deletion
+    } catch (error) {
+      console.error("Error deleting Book:", error);
+      toast.error("Error deleting Book");
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setDeleteBookId(null); // Reset deleteBookId state
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setPage(pageNumber);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+      // Create a button element for each page number
+      const button = (
+        <Button
+          key={pageNumber}
+          onClick={() => handlePageClick(pageNumber)}
+          disabled={pageNumber === page} // Disable current page button
+          primary={pageNumber === page} // Highlight current page button
+        >
+          {pageNumber}
+        </Button>
+      );
+
+      // Push the button element into the pageNumbers array
+      pageNumbers.push(button);
+    }
+
+    // Return the array of page number buttons
+    return pageNumbers;
+  };
+
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+    if (e.target.value === "") {
+      setFilteredBooks(books); // Reset filteredbooks when search is cleared
+    } else {
+      setFilteredBooks(
+        allBooks.filter((book) =>
+          book.title.toLowerCase().includes(e.target.value.toLowerCase())
+        )
+      );
+    }
+    console.log(searchText);
+  };
+
+  const handleResetSearch = () => {
+    setSearchText("");
+    setFilteredBooks(books);
+  };
+
+  const handleSort = () => {
+    const sortedBooks = _.orderBy(
+      filteredBooks,
+      ["name"],
+      [direction === "ascending" ? "asc" : "desc"]
+    );
+    setFilteredBooks(sortedBooks);
+    setDirection(direction === "ascending" ? "descending" : "ascending");
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
+
+  const fetchAuthors = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/authors/all`);
+      const { authors } = response.data;
+      setAuthors(authors || []);
+      // setAuthors(authors);
+    } catch (error) {
+      console.error("Error fetching authors:", error);
+      setAuthors([]);
+    }
+  };
+
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/genres/all`);
+      const { genres, totalCount } = response.data;
+      setGenres(genres);
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
   return (
-    <Container text style={{ marginTop: "5em" }}>
-      <Header as="h1" textAlign="center">
-        Welcome to add new book
-      </Header>
-    </Container>
+    <div>
+      <Grid columns="equal" style={{ margin: 0 }}>
+        <Grid.Row style={{ padding: 0 }}>
+          <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
+          <Grid.Column stretched style={{ padding: 0 }}>
+            <Navbar />
+            <BookHeader />
+            <div class="ui grid">
+              <div class="eight wide column left-aligned">
+                <div class="add-book-button-container">
+                  <button
+                    class="ui labeled icon black button"
+                    onClick={() => setOpen(true)}
+                  >
+                    <i class="plus icon"></i>Add Book
+                  </button>
+                </div>
+              </div>
+              <div class="eight wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input
+                        type="text"
+                        placeholder="Search Book"
+                        value={searchText}
+                        onChange={handleSearch}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Modal open={open} onClose={() => setOpen(false)}>
+              <ModalHeader>
+                {selectedBook ? "Edit Book" : "Add New Book"}
+              </ModalHeader>
+              <ModalContent>
+                <ModalDescription>
+                  <Form onSubmit={handleSubmit}>
+                    <Form.Field>
+                      <input
+                        placeholder="Enter Book Name"
+                        value={bookName}
+                        onChange={(e) => setBookName(e.target.value)}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <Dropdown
+                        placeholder="Select Author"
+                        fluid
+                        search
+                        selection
+                        options={authors.map((author) => ({
+                          key: author.author_id,
+                          text: author.name,
+                          value: author.author_id,
+                        }))}
+                        value={selectedAuthorId}
+                        onChange={(e, { value }) => setSelectedAuthorId(value)}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <Dropdown
+                        placeholder="Select Genres"
+                        fluid
+                        search
+                        selection
+                        options={genres.map((genres) => ({
+                          key: genres.genre_id,
+                          text: genres.genre_name,
+                          value: genres.genre_id,
+                        }))}
+                        value={selectedGenresId}
+                        onChange={(e, { value }) => setSelectedGenresId(value)}
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <DatePicker
+                        selected={pdate}
+                        onChange={(date) => setPdate(date)}
+                        dateFormat="dd/MM/yyyy"
+                        placeholderText="Select Publication Date"
+                        
+                      />
+                    </Form.Field>
+                    <Form.Field>
+                      <TextArea
+                        placeholder="Enter Price"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                      />
+                    </Form.Field>
+                    <Button color="green" type="submit">
+                      {selectedBook ? "Update Book" : "Add Book"}
+                    </Button>
+                  </Form>
+                </ModalDescription>
+              </ModalContent>
+            </Modal>
+            <Table className="ui very basic collapsing selectable celled table sortable">
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell>Sl. No</Table.HeaderCell>
+                  <Table.HeaderCell sorted={direction} onClick={handleSort}>
+                    Book
+                  </Table.HeaderCell>
+                  <Table.HeaderCell>Price</Table.HeaderCell>
+                  <Table.HeaderCell>Publication Date</Table.HeaderCell>
+                  <Table.HeaderCell>Edit</Table.HeaderCell>
+                  <Table.HeaderCell>Delete</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {filteredBooks.map((book, index) => (
+                  <Table.Row key={book.book_id}>
+                    <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
+                    {/* Display serial number */}
+                    <Table.Cell>{book.title}</Table.Cell>
+                    <Table.Cell>{book.price}</Table.Cell>
+                    <Table.Cell>{formatDate(book.publication_date)}</Table.Cell>
+                    <Table.Cell>
+                      <Button
+                        className="btn btn-primary btn-sm"
+                        color="green"
+                        size="mini" // Set the size here
+                        onClick={() => handleEditButtonClick(book)}
+                      >
+                        <Icon name="edit"></Icon> Edit
+                      </Button>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Button
+                        className="btn btn-primary btn-sm"
+                        color="red"
+                        size="mini" // Set the size here
+                        onClick={() => handleDeleteButtonClick(book)}
+                      >
+                        <Icon name="delete"></Icon> Delete
+                      </Button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+              <Table.Footer>
+                <Table.Row>
+                  <Table.HeaderCell colSpan="6" textAlign="center">
+                    <Button
+                      icon
+                      labelPosition="left"
+                      disabled={page === 1}
+                      onClick={handlePrevPage}
+                    >
+                      <Icon name="left arrow" />
+                      Previous
+                    </Button>
+                    <span>{renderPageNumbers()}</span>
+                    <Button
+                      icon
+                      labelPosition="right"
+                      disabled={books.length < pageSize}
+                      onClick={handleNextPage}
+                    >
+                      Next
+                      <Icon name="right arrow" />
+                    </Button>
+                  </Table.HeaderCell>
+                </Table.Row>
+              </Table.Footer>
+              <Modal
+                open={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                size="tiny"
+              >
+                <ModalHeader>Confirm Delete</ModalHeader>
+                <ModalContent>
+                  <ModalDescription>
+                    Are you sure you want to delete this book?
+                  </ModalDescription>
+                </ModalContent>
+                <Modal.Actions>
+                  <Button color="red" onClick={handleCancelDelete}>
+                    <Icon name="remove" /> Cancel
+                  </Button>
+                  <Button color="green" onClick={handleConfirmDelete}>
+                    <Icon name="checkmark" /> Confirm
+                  </Button>
+                </Modal.Actions>
+              </Modal>
+            </Table>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+      <Footer />
+    </div>
   );
 };
+
 export default AddNewBook;

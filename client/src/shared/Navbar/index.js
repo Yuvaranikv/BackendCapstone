@@ -11,7 +11,10 @@ const Navbar = () => {
   const handleHomeClick = () => {
     navigate('/'); 
   };
-  
+  const handleBooksClick=() =>{
+    navigate('/books/list');
+  }
+
   const handleAuthorsClick=() =>{
     navigate('/authors/list');
   }
@@ -34,7 +37,7 @@ const Navbar = () => {
           <Icon name="home" />
           Home
         </Menu.Item>
-        <Menu.Item as="a">
+        <Menu.Item as="a" onClick={handleBooksClick}>
           <Icon name="book" />
           Books
         </Menu.Item>

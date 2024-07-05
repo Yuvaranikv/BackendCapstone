@@ -28,17 +28,29 @@ const Genreslist = () => {
   const [selectedGenres, setSelectedGenres] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5); // Adjust based on your backend limit
+  const [pageSize, setPageSize] = useState(5); 
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteGenresId, setDeleteGenresId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredGenres, setFilteredGenres] = useState([]);
+  const [allGenres, setAllGenres] = useState([]);
 
   useEffect(() => {
+    fetchAllGenres(); // Fetch all genres initially
     fetchGenres();
-  }, [page]); // Reload authors when currentPage changes
+  }, [page]); // Reload genres when page changes
+
+  const fetchAllGenres = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/genres/all`);
+      setAllGenres(response.data.genres); // Store all genres in state
+    } catch (error) {
+      console.error("Error fetching all genres:", error);
+    }
+  };
+
 
   const fetchGenres = async () => {
     try {
@@ -73,7 +85,7 @@ const Genreslist = () => {
         const response = await axios.put(
           `http://localhost:3000/genres/edit/${selectedGenres.genre_id}`,
           {
-            genre_name: genresname
+            genre_name: genresname,
           }
         );
         console.log("Updated genres:", response.data);
@@ -88,12 +100,9 @@ const Genreslist = () => {
       }
     } else {
       try {
-        const response = await axios.post(
-          "http://localhost:3000/genres/add/",
-          {
-            genre_name: genresname
-          }
-        );
+        const response = await axios.post("http://localhost:3000/genres/add/", {
+          genre_name: genresname,
+        });
         console.log("Added new Genres:", response.data);
         fetchGenres();
         setGenresName("");
@@ -168,11 +177,11 @@ const Genreslist = () => {
   const handleSearch = (e) => {
     setSearchText(e.target.value);
     if (e.target.value === "") {
-      setFilteredGenres(genres); // Reset filteredAuthors when search is cleared
+      setFilteredGenres(genres); 
     } else {
       setFilteredGenres(
-        genres.filter((genres) =>
-        genres.genre_name.toLowerCase().includes(e.target.value.toLowerCase())
+        allGenres.filter((genres) =>
+          genres.genre_name.toLowerCase().includes(e.target.value.toLowerCase())
         )
       );
     }
@@ -192,28 +201,32 @@ const Genreslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <div className="add-author-button-container">
-              <Button
-                className="ui labeled icon"
-                color="black"
-                onClick={() => setOpen(true)}
-              >
-                <i className="plus icon"></i>Add Genres
-              </Button>
-            </div>
-            <div className="search-container">
-              <div className="ui right aligned category search">
-                <div className="ui icon input">
-                  <input
-                    className="prompt"
-                    type="text"
-                    placeholder="Search Genres"
-                    value={searchText}
-                    onChange={handleSearch}
-                  ></input>
-                  <i className="search icon"></i>
+            <div class="ui grid">
+              <div class="eight wide column left-aligned">
+                <div class="add-book-button-container">
+                  <button
+                    class="ui labeled icon black button"
+                    onClick={() => setOpen(true)}
+                  >
+                    <i class="plus icon"></i>Add Genres
+                  </button>
                 </div>
-                <div className="results"></div>
+              </div>
+              <div class="eight wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input
+                        type="text"
+                        placeholder="Search Genres"
+                        value={searchText}
+                        onChange={handleSearch}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
               </div>
             </div>
             <Modal open={open} onClose={() => setOpen(false)}>
@@ -240,6 +253,7 @@ const Genreslist = () => {
             <Table className="ui very basic collapsing selectable celled table sortable">
               <Table.Header>
                 <Table.Row>
+                  <Table.HeaderCell>Sl. No</Table.HeaderCell>
                   <Table.HeaderCell className="sorted ascending">
                     Genres
                   </Table.HeaderCell>
@@ -249,8 +263,9 @@ const Genreslist = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {filteredGenres.map((genres) => (
+                {filteredGenres.map((genres, index) => (
                   <Table.Row key={genres.genre_id}>
+                    <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>
                     <Table.Cell>{genres.genre_name}</Table.Cell>
                     <Table.Cell>
                       <Button

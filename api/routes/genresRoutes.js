@@ -28,6 +28,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/all', async (req, res) => {
+  
+  try {
+   
+    const genres = await Genre.findAll({
+      where: { isActive: true },
+      attributes: ['genre_id', 'genre_name'],
+    });
+ 
+ const totalGenresCount = await Genre.count();
+
+ res.json({
+  genres: genres,
+  totalCount: totalGenresCount
+});
+}
+   catch (err) {
+    console.error('Error retrieving genres', err);
+    res.status(500).send('Error retrieving genres');
+  }
+});
+
 // Get genre by ID
 router.get('/:id', async (req, res) => {
   try {

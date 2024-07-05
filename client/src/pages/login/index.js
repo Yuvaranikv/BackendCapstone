@@ -18,7 +18,7 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         console.log("Redirecting to Add New Books page...");
-        navigate('/addbook');//Redirect to AddNewBook Page
+        navigate('/books/list');//Redirect to AddNewBook Page
        // window.location.href = "/pages/AddNewBook";
       }
     } catch (error) {

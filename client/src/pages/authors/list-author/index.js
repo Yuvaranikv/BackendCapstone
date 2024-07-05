@@ -20,7 +20,7 @@ import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import _ from 'lodash';
+import _ from "lodash";
 
 const AuthorsList = () => {
   const [authors, setAuthors] = useState([]);
@@ -37,10 +37,22 @@ const AuthorsList = () => {
   const [searchText, setSearchText] = useState("");
   const [filteredAuthors, setFilteredAuthors] = useState([]);
   const [direction, setDirection] = useState(null);
+  const [allAuthors, setAllAuthors] = useState([]);
 
   useEffect(() => {
     fetchAuthors();
+    fetchAllAuthors();
   }, [page]); // Reload authors when currentPage changes
+
+  const fetchAllAuthors = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/authors/all`);
+      setAllAuthors(response.data.authors);
+      console.log(allAuthors);
+    } catch (error) {
+      console.error("Error fetching authors:", error);
+    }
+  };
 
   const fetchAuthors = async () => {
     try {
@@ -178,7 +190,7 @@ const AuthorsList = () => {
       setFilteredAuthors(authors); // Reset filteredAuthors when search is cleared
     } else {
       setFilteredAuthors(
-        authors.filter((author) =>
+        allAuthors.filter((author) =>
           author.name.toLowerCase().includes(e.target.value.toLowerCase())
         )
       );
@@ -192,9 +204,13 @@ const AuthorsList = () => {
   };
 
   const handleSort = () => {
-    const sortedAuthors = _.orderBy(filteredAuthors, ['name'], [direction === 'ascending' ? 'asc' : 'desc']);
+    const sortedAuthors = _.orderBy(
+      filteredAuthors,
+      ["name"],
+      [direction === "ascending" ? "asc" : "desc"]
+    );
     setFilteredAuthors(sortedAuthors);
-    setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+    setDirection(direction === "ascending" ? "descending" : "ascending");
   };
 
   return (
@@ -205,32 +221,32 @@ const AuthorsList = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <div className="add-author-button-container">
-              <Button
-                className="ui labeled icon"
-                color="black"
-                onClick={() => setOpen(true)}
-                style={{ width: "100%" }}
-              >
-                <i className="plus icon"></i>Add Author
-              </Button>
-            </div>
-            <div
-              className="search-container"
-              style={{ float: "right", marginRight: 20 }}
-            >
-              <div className="ui right aligned category search">
-                <div className="ui icon input">
-                  <input
-                    className="prompt"
-                    type="text"
-                    placeholder="Search Author"
-                    value={searchText}
-                    onChange={handleSearch}
-                  ></input>
-                  <i className="search icon"></i>
+            <div class="ui grid">
+              <div class="eight wide column left-aligned">
+                <div class="add-book-button-container">
+                  <button
+                    class="ui labeled icon black button"
+                    onClick={() => setOpen(true)}
+                  >
+                    <i class="plus icon"></i>Add Author
+                  </button>
                 </div>
-                <div className="results"></div>
+              </div>
+              <div class="eight wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input
+                        type="text"
+                        placeholder="Search Author"
+                        value={searchText}
+                        onChange={handleSearch}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
               </div>
             </div>
             <Modal open={open} onClose={() => setOpen(false)}>
@@ -264,10 +280,8 @@ const AuthorsList = () => {
             <Table className="ui very basic collapsing selectable celled table sortable">
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell
-                    sorted={direction}
-                    onClick={handleSort}
-                  >
+                  <Table.HeaderCell>Sl. No</Table.HeaderCell>
+                  <Table.HeaderCell sorted={direction} onClick={handleSort}>
                     Author
                   </Table.HeaderCell>
                   <Table.HeaderCell>Biography</Table.HeaderCell>
@@ -276,8 +290,9 @@ const AuthorsList = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {filteredAuthors.map((author) => (
+                {filteredAuthors.map((author, index) => (
                   <Table.Row key={author.author_id}>
+                    <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
                     <Table.Cell>{author.name}</Table.Cell>
                     <Table.Cell>{author.biography}</Table.Cell>
                     <Table.Cell>

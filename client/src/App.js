@@ -16,11 +16,12 @@ function App() {
     <Routes>
     <Route exact path="/" element={<LoginPage/>}/>
     
-      {/* <Route path="/books" element={<Book/>}/>
-      <Route path="/book/add" element={<AddNewBook/>}/>
-      <Route path="/authors" element={<AddAuthors/>}/>
+      {/*
+     />
+    
       <Route path="/authors/add" element={<AddAuthors/>}/>
-      <Route path="/authors/list" element={<ListAuthors/>}/> */}
+      */}
+       <Route path="/books/list" element={<AddNewBook/>}/>
        <Route path="/authors/list" element={<ListAuthors/>}/>
        <Route path="/genres/list" element={<Genreslist/>}/>
        <Route path="/Footer" element={<Footer/>}/>
