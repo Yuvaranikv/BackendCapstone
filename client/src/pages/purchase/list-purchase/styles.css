@@ -1,0 +1,8 @@
+.margin-top {
+    margin-top: 1em !important; /* Adjust the value as needed */
+  }
+
+  .ui.table thead th {
+    background-color:rgb(200, 158, 155)!important; /* Change this to your desired color */
+   
+  }

@@ -63,10 +63,8 @@ const Book = sequelize.define(
     },
     imageURL: {
       type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        isUrl: true,
-      },
+      allowNull: true, // Adjust as per your requirements
+     
     },
     description: {
       type: DataTypes.TEXT,

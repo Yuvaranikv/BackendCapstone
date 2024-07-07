@@ -1,10 +1,25 @@
-const express = require("express");
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const Book = require('../models/Book');
+
 const router = express.Router();
-const Book = require("../models/Book");
+
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
 
 router.get("/", async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-  const limit = parseInt(req.query.limit) || 10; // Default limit to 10 items per page
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
 
   try {
     const offset = (page - 1) * limit;
@@ -13,7 +28,7 @@ router.get("/", async (req, res) => {
       offset: offset,
       limit: limit,
     });
-   
+
     const totalBooksCount = await Book.count();
 
     res.json({
@@ -21,34 +36,29 @@ router.get("/", async (req, res) => {
       totalCount: totalBooksCount,
     });
   } catch (err) {
-    console.error("Error retrieving authors", err);
-    res.status(500).send("Error retrieving authors");
+    console.error("Error retrieving books", err);
+    res.status(500).send("Error retrieving books");
   }
 });
 
 router.get('/all', async (req, res) => {
-  
   try {
-   
     const books = await Book.findAll({
       where: { isActive: true },
-      // attributes: ['genre_id', 'genre_name'],
     });
- 
- const totalBookCount = await Book.count();
 
- res.json({
-  books: books,
-  totalCount: totalBookCount
-});
-}
-   catch (err) {
+    const totalBookCount = await Book.count();
+
+    res.json({
+      books: books,
+      totalCount: totalBookCount,
+    });
+  } catch (err) {
     console.error('Error retrieving books', err);
     res.status(500).send('Error retrieving books');
   }
 });
 
-// Get book by ID
 router.get("/:id", async (req, res) => {
   try {
     const book = await Book.findByPk(req.params.id);
@@ -62,16 +72,22 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Add a new book
+router.post('/upload', upload.single('file'), (req, res) => {
+  try {
+    const filePath = `/uploads/${req.file.filename}`;
+    res.status(200).json({ filePath });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/add", async (req, res) => {
   try {
-    const { title, author_id, genre_id, price, publication_date,ISBN,imageURL,description } = req.body;
+    const { title, author_id, genre_id, price, publication_date, ISBN, imageURL, description } = req.body;
 
-    // Basic input validation
-    if (!title || !author_id || !genre_id || !price || !publication_date||!ISBN||!imageURL||!description) {
+    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN || !imageURL || !description) {
       return res.status(400).send("All fields are required");
     }
-    // Further validation for price, publication_date format, etc., can be added
 
     const newBook = await Book.create({
       title,
@@ -91,17 +107,14 @@ router.post("/add", async (req, res) => {
   }
 });
 
-// Update a book
 router.put("/edit/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, author_id, genre_id, price, publication_date,ISBN,imageURL,description } = req.body;
+    const { title, author_id, genre_id, price, publication_date, ISBN, imageURL, description } = req.body;
 
-    // Basic input validation
-    if (!title || !author_id || !genre_id || !price || !publication_date ||!ISBN||!imageURL||!description) {
+    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN || !imageURL || !description) {
       return res.status(400).send("All fields are required");
     }
-    // Further validation for price, publication_date format, etc., can be added
 
     const book = await Book.findByPk(id);
     if (!book) {
@@ -126,7 +139,6 @@ router.put("/edit/:id", async (req, res) => {
   }
 });
 
-// Delete a book
 router.delete("/delete/:id", async (req, res) => {
   try {
     const { id } = req.params;

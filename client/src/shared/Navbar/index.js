@@ -24,11 +24,11 @@ const Navbar = () => {
   }
 
   const handlePurchaseClick=() =>{
-    navigate('/books/list');
+    navigate('/purchase/list');
   }
 
   const handleSalesClick=() =>{
-    navigate('/authors/list');
+    navigate('/sales/list');
   }
   const handleReportsClick=() =>{
     navigate('/genres/list');
@@ -71,7 +71,7 @@ const Navbar = () => {
         </Menu.Item>
         <Menu.Item as="a" onClick={handleReportsClick}>
         <Icon name="chart line" />
-          Reports
+          Stock
         </Menu.Item>
         <Menu.Item as="a" onClick={handleHomeClick}>
         <Icon name="sign-out" />

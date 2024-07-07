@@ -8,6 +8,8 @@ import Footer from './shared/Footer'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Genreslist from './pages/genres/list-genres';
+import Purchaselist from './pages/purchase/list-purchase';
+import Saleslist from './pages/sales/list-sales';
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
        <Route path="/books/list" element={<AddNewBook/>}/>
        <Route path="/authors/list" element={<ListAuthors/>}/>
        <Route path="/genres/list" element={<Genreslist/>}/>
+       <Route path="/purchase/list" element={<Purchaselist/>}/>
+       <Route path="/sales/list" element={<Saleslist/>}/>
        <Route path="/Footer" element={<Footer/>}/>
     </Routes>
   </Router>

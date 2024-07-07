@@ -12,6 +12,7 @@ import {
   ModalDescription,
   Icon,
   Dropdown,
+  Image,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -49,7 +50,7 @@ const AddNewBook = () => {
   const [isbnNo, setIsbnNo] = useState([]);
   const [description, setDescription] = useState([]);
   const [coverPage, setCoverPage] = useState([]);
- 
+  const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
     fetchBooks();
@@ -61,7 +62,7 @@ const AddNewBook = () => {
   const fetchAllBooks = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/books/all`);
-      setAllBooks(response.data.authors); // Store all books in state
+      setAllBooks(response.data.books); // Store all books in state
     } catch (error) {
       console.error("Error fetching all books:", error);
     }
@@ -155,6 +156,10 @@ const AddNewBook = () => {
     setSelectedGenresId(book.genre_id);
     setPdate(book.publication_date);
     setPrice(book.price);
+    setIsbnNo(book.ISBN);
+    setDescription(book.description);
+    setCoverPage(book.imageURL);
+    console.log(coverPage);
     setOpen(true);
   };
 
@@ -268,7 +273,35 @@ const AddNewBook = () => {
       console.error("Error fetching genres:", error);
     }
   };
-  
+
+  const handleFileChange = async (e) => {
+    setSelectedFile(e.target.files[0]);
+    console.log(e.target.files[0]);
+    await handleFileUpload();
+  };
+
+  const handleFileUpload = async () => {
+    // if (!selectedFile) {
+    //   toast.error("Please select a file to upload.");
+    //   return;
+    // }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/books/upload",
+        formData
+      );
+      const filePath = response.data.filePath;
+      setCoverPage(`http://localhost:3000${filePath}`);
+      toast.success("File uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast.error("Error uploading file");
+    }
+  };
 
   return (
     <div>
@@ -394,10 +427,11 @@ const AddNewBook = () => {
                       </div>
                     </Form.Field>
                     <Form.Field>
+                      <input type="file" onChange={handleFileChange} />
                       <input
-                        placeholder="Image URL"
+                        placeholder="Cover Page URL"
                         value={coverPage}
-                        onChange={(e) => setCoverPage(e.target.value)}
+                        readOnly // Make it read-only to display only
                       />
                     </Form.Field>
                     <Button color="green" type="submit">
