@@ -30,7 +30,7 @@ const Saleslist = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(2);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteSaleId, setDeleteSaleId] = useState(null);
@@ -269,7 +269,7 @@ const Saleslist = () => {
               </Form.Group>
               <Form.Field width={12}>
                 <label>Comments</label>
-                <textarea
+                <textarea className="custom-textarea"
                   placeholder="Enter Comments"
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
@@ -287,7 +287,7 @@ const Saleslist = () => {
                 <Table.Row>
                   <Table.HeaderCell>Sl. No</Table.HeaderCell>
                   <Table.HeaderCell>Book</Table.HeaderCell>
-                   <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
+                  <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
                   <Table.HeaderCell>Sale Date</Table.HeaderCell>
                   <Table.HeaderCell>Comments</Table.HeaderCell>
                   <Table.HeaderCell>Edit</Table.HeaderCell>
@@ -301,7 +301,7 @@ const Saleslist = () => {
                     <Table.Cell>
                       {sale.Book ? sale.Book.title : "N/A"}
                     </Table.Cell>
-                     <Table.Cell>{sale.quantity_sold}</Table.Cell>
+                    <Table.Cell>{sale.quantity_sold}</Table.Cell>
                     <Table.Cell>{formatDate(sale.salesdate)}</Table.Cell>
                     <Table.Cell>{sale.comments}</Table.Cell>
                     <Table.Cell>
@@ -375,8 +375,8 @@ const Saleslist = () => {
             </Modal>
           </Grid.Column>
         </Grid.Row>
-        <Footer />
       </Grid>
+      <Footer />
     </div>
   );
 };

@@ -29,7 +29,7 @@ const Purchaselist = () => {
   const [comments, setComments] = useState("");
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(2);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [filteredPurchases, setFilteredPurchases] = useState([]);
@@ -253,9 +253,9 @@ const Purchaselist = () => {
                   />
                 </Form.Field>
               </Form.Group>
-                <Form.Field width={12}>
+                <Form.Field width={12}   >
                 <label>Comments</label>
-                <textarea
+                <textarea className="custom-textarea"
                   placeholder="Enter Comments"
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
@@ -357,23 +357,11 @@ const Purchaselist = () => {
                 </Modal.Actions>
               </Modal>
             </Table>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "1em",
-              }}
-            >
-              <Pagination
-                activePage={page}
-                totalPages={totalPages}
-                onPageChange={(e, { activePage }) => setPage(activePage)}
-              />
-            </div>
-            <Footer />
+            
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <Footer />
       <ToastContainer />
     </div>
   );

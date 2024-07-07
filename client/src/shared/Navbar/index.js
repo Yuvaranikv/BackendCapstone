@@ -30,8 +30,8 @@ const Navbar = () => {
   const handleSalesClick=() =>{
     navigate('/sales/list');
   }
-  const handleReportsClick=() =>{
-    navigate('/genres/list');
+  const handleStocksClick=() =>{
+    navigate('/stock/list');
   }
   return (
     <Sidebar
@@ -69,7 +69,7 @@ const Navbar = () => {
        <Icon name="arrow down cart"></Icon>
           Sales
         </Menu.Item>
-        <Menu.Item as="a" onClick={handleReportsClick}>
+        <Menu.Item as="a" onClick={handleStocksClick}>
         <Icon name="chart line" />
           Stock
         </Menu.Item>

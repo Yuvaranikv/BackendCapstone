@@ -2,3 +2,6 @@
     margin-top: 1em !important; /* Adjust the value as needed */
   }
 
+  .custom-textarea {
+    height: 50px !important; /* Adjust the height value as needed */
+  }

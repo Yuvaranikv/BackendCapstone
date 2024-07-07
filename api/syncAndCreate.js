@@ -5,6 +5,7 @@ const Genre = require('./models/Genres');
 const User = require('./models/User');
 const Purchase = require('./models/Purchase');
 const Sales = require('./models/Sales');
+
 require('./config/associations'); // Ensure associations are loaded
 
 async function syncAndCreate() {

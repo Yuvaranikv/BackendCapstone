@@ -9,6 +9,7 @@ const userRoutes=require('./routes/userRoutes');
 const path = require('path');
 const purchaseRoutes=require('./routes/purchaseRoute');
 const salesRoutes=require('./routes/salesRoute');
+const stockRoutes=require('./routes/stockRoutes');
 
 app.use(cors());
 // Middleware to parse JSON bodies
@@ -21,6 +22,7 @@ app.use('/genres',genresRoutes);
 app.use('/userstest',userRoutes);
 app.use('/purchase',purchaseRoutes)
 app.use('/sales',salesRoutes);
+app.use('/stock',stockRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

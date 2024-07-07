@@ -3,3 +3,6 @@
   }
 
   
+  .custom-textarea {
+    height: 50px !important; /* Adjust the height value as needed */
+  }
