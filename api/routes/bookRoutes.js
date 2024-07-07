@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const Book = require('../models/Book');
+const Genres = require('../models/Genres');
+const Author=require('../models/Author');
 
 const router = express.Router();
 
@@ -27,6 +29,10 @@ router.get("/", async (req, res) => {
       where: { isActive: true },
       offset: offset,
       limit: limit,
+      include: [
+        { model: Author, as: 'Author', attributes: ['name'] },
+        { model: Genres, as: 'Genres', attributes: ['genre_name'] }
+      ],
     });
 
     const totalBooksCount = await Book.count();

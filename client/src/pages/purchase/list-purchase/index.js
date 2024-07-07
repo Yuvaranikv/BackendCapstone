@@ -69,6 +69,11 @@ const Purchaselist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validation checks
+  if (!selectedBookId || !quantityInStock || !purchaseDate) {
+    toast.error("Please fill all required fields before submitting.");
+    return;
+  }
     const payload = {
       bookid: selectedBookId,
       quantityinstock: quantityInStock,
@@ -214,7 +219,6 @@ const Purchaselist = () => {
             <BookHeader />
             <Header as='h2'> {selectedPurchase ? "Purchase" : "Purchase"}</Header>
             <Form onSubmit={handleSubmit}>
-           
                 <Form.Group>
                 <Form.Field width={4} className="margin-top">
                 <label>Book</label>
@@ -249,8 +253,7 @@ const Purchaselist = () => {
                   />
                 </Form.Field>
               </Form.Group>
-            
-              <Form.Field width={12}>
+                <Form.Field width={12}>
                 <label>Comments</label>
                 <textarea
                   placeholder="Enter Comments"
@@ -258,8 +261,11 @@ const Purchaselist = () => {
                   onChange={(e) => setComments(e.target.value)}
                 />
               </Form.Field>
-              <Button color="green" type="submit">
+              <Button color="black" type="submit">
                 {selectedPurchase ? "Update" : "Add"}
+              </Button>
+              <Button color="black" type="button" onClick={resetForm} >
+              Clear 
               </Button>
             </Form>
             <Table className="ui very basic collapsing selectable celled table sortable">

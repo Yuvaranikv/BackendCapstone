@@ -9,6 +9,8 @@ import {
   Input,
   Icon,
   Pagination,
+  Header,
+  Dropdown,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -35,9 +37,12 @@ const Saleslist = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredSales, setFilteredSales] = useState([]);
+  const [allBooks, setAllBooks] = useState([]);
+  const [selectedBookId, setSelectedBookId] = useState(null);
 
   useEffect(() => {
     fetchSales();
+    fetchAllBooks();
   }, [page]); // Reload sales when page changes
 
   const fetchSales = async () => {
@@ -57,6 +62,15 @@ const Saleslist = () => {
     }
   };
 
+  const fetchAllBooks = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/books/all`);
+      setAllBooks(response.data.books);
+    } catch (error) {
+      console.error("Error fetching all books:", error);
+    }
+  };
+
   const handleNextPage = () => {
     setPage(page + 1);
   };
@@ -67,24 +81,24 @@ const Saleslist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedBookId || !quantitySold || !saleDate) {
+      toast.error("Please fill all required fields before submitting.");
+      return;
+    }
     if (selectedSale) {
       try {
         const response = await axios.put(
-          `http://localhost:3000/sales/edit/${selectedSale.saleid}`,
+          `http://localhost:3000/sales/edit/${selectedSale.salesid}`,
           {
             bookid: bookId,
-            quantitysold: quantitySold,
-            saledate: saleDate,
+            quantity_sold: quantitySold,
+            salesdate: saleDate,
             comments: comments,
           }
         );
         console.log("Updated sale:", response.data);
         fetchSales();
-        setBookId("");
-        setQuantitySold("");
-        setSaleDate("");
-        setComments("");
-        setSelectedSale(null);
+        resetForm();
         setOpen(false);
         toast.success("Sale updated successfully");
       } catch (error) {
@@ -93,21 +107,15 @@ const Saleslist = () => {
       }
     } else {
       try {
-        const response = await axios.post(
-          "http://localhost:3000/sales/add/",
-          {
-            bookid: bookId,
-            quantitysold: quantitySold,
-            saledate: saleDate,
-            comments: comments,
-          }
-        );
+        const response = await axios.post("http://localhost:3000/sales/add/", {
+          bookid: selectedBookId,
+          quantity_sold: quantitySold,
+          salesdate: saleDate,
+          comments: comments,
+        });
         console.log("Added new sale:", response.data);
         fetchSales();
-        setBookId("");
-        setQuantitySold("");
-        setSaleDate("");
-        setComments("");
+        resetForm();
         setOpen(false);
         toast.success("Sale added successfully");
       } catch (error) {
@@ -119,23 +127,22 @@ const Saleslist = () => {
 
   const handleEditButtonClick = (sale) => {
     setSelectedSale(sale);
+    setSelectedBookId(sale.bookid);
     setBookId(sale.bookid);
-    setQuantitySold(sale.quantitysold);
-    setSaleDate(sale.saledate);
+    setQuantitySold(sale.quantity_sold);
+    setSaleDate(new Date(sale.salesdate).toISOString().split("T")[0]);
     setComments(sale.comments);
     setOpen(true);
   };
 
   const handleDeleteButtonClick = async (sale) => {
-    setDeleteSaleId(sale.saleid);
+    setDeleteSaleId(sale.salesid);
     setConfirmOpen(true);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(
-        `http://localhost:3000/sales/delete/${deleteSaleId}`
-      );
+      await axios.delete(`http://localhost:3000/sales/delete/${deleteSaleId}`);
       console.log("Deleted sale");
       toast.success("Sale deleted successfully");
       fetchSales();
@@ -198,6 +205,23 @@ const Saleslist = () => {
     setSearchText("");
     setFilteredSales(sales);
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
+
+  const resetForm = () => {
+    setSelectedSale(null);
+    setSelectedBookId(null);
+    setBookId("");
+    setQuantitySold("");
+    setSaleDate("");
+    setComments("");
+  };
 
   return (
     <div>
@@ -207,85 +231,63 @@ const Saleslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <div class="ui grid">
-              <div class="eight wide column left-aligned">
-                <div class="add-book-button-container">
-                  <button
-                    class="ui labeled icon black button"
-                    onClick={() => setOpen(true)}
-                  >
-                    <i class="plus icon"></i>Add Sale
-                  </button>
-                </div>
-              </div>
-              <div class="eight wide column right-aligned">
-                <div class="search-container">
-                  <div class="ui ">
-                    <div class="ui icon input">
-                      <input
-                        type="text"
-                        placeholder="Search Sale"
-                        value={searchText}
-                        onChange={handleSearch}
-                      />
-                      <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Modal open={open} onClose={() => setOpen(false)}>
-              <Modal.Header>
-                {selectedSale ? "Edit Sale" : "Add New Sale"}
-              </Modal.Header>
-              <Modal.Content>
-                <Form onSubmit={handleSubmit}>
-                  <Form.Field>
-                    <label>Book ID</label>
-                    <input
-                      placeholder="Enter Book ID"
-                      value={bookId}
-                      onChange={(e) => setBookId(e.target.value)}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Quantity Sold</label>
-                    <input
-                      placeholder="Enter Quantity Sold"
-                      value={quantitySold}
-                      onChange={(e) => setQuantitySold(e.target.value)}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Sale Date</label>
-                    <input
-                      type="date"
-                      placeholder="Enter Sale Date"
-                      value={saleDate}
-                      onChange={(e) => setSaleDate(e.target.value)}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <label>Comments</label>
-                    <textarea
-                      placeholder="Enter Comments"
-                      value={comments}
-                      onChange={(e) => setComments(e.target.value)}
-                    />
-                  </Form.Field>
-                  <Button color="green" type="submit">
-                    {selectedSale ? "Update Sale" : "Add Sale"}
-                  </Button>
-                </Form>
-              </Modal.Content>
-            </Modal>
+            <Header as="h2"> {selectedSale ? "Sales" : "Sales"}</Header>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group>
+                <Form.Field width={4} className="margin-top">
+                  <label>Book</label>
+                  <Dropdown
+                    placeholder="Select Book"
+                    fluid
+                    selection
+                    options={allBooks.map((book) => ({
+                      key: book.book_id,
+                      text: book.title,
+                      value: book.book_id,
+                    }))}
+                    value={selectedBookId}
+                    onChange={(e, { value }) => setSelectedBookId(value)}
+                  />
+                </Form.Field>
+                <Form.Field width={4} className="margin-top">
+                  <label>Quantity Sold</label>
+                  <input
+                    placeholder="Enter Quantity Sold"
+                    value={quantitySold}
+                    onChange={(e) => setQuantitySold(e.target.value)}
+                  />
+                </Form.Field>
+                <Form.Field width={4} className="margin-top">
+                  <label>Sale Date</label>
+                  <input
+                    type="date"
+                    placeholder="Enter Sale Date"
+                    value={saleDate}
+                    onChange={(e) => setSaleDate(e.target.value)}
+                  />
+                </Form.Field>
+              </Form.Group>
+              <Form.Field width={12}>
+                <label>Comments</label>
+                <textarea
+                  placeholder="Enter Comments"
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                />
+              </Form.Field>
+              <Button color="black" type="submit">
+                {selectedSale ? "Update" : "Add"}
+              </Button>
+              <Button color="black" type="button" onClick={resetForm}>
+                Clear
+              </Button>
+            </Form>
             <Table className="ui very basic collapsing selectable celled table sortable">
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Sl. No</Table.HeaderCell>
-                  <Table.HeaderCell>Book ID</Table.HeaderCell>
-                  <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
+                  <Table.HeaderCell>Book</Table.HeaderCell>
+                   <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
                   <Table.HeaderCell>Sale Date</Table.HeaderCell>
                   <Table.HeaderCell>Comments</Table.HeaderCell>
                   <Table.HeaderCell>Edit</Table.HeaderCell>
@@ -296,9 +298,11 @@ const Saleslist = () => {
                 {filteredSales.map((sale, index) => (
                   <Table.Row key={sale.saleid}>
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>
-                    <Table.Cell>{sale.bookid}</Table.Cell>
-                    <Table.Cell>{sale.quantitysold}</Table.Cell>
-                    <Table.Cell>{sale.saledate}</Table.Cell>
+                    <Table.Cell>
+                      {sale.Book ? sale.Book.title : "N/A"}
+                    </Table.Cell>
+                     <Table.Cell>{sale.quantity_sold}</Table.Cell>
+                    <Table.Cell>{formatDate(sale.salesdate)}</Table.Cell>
                     <Table.Cell>{sale.comments}</Table.Cell>
                     <Table.Cell>
                       <Button
@@ -371,8 +375,8 @@ const Saleslist = () => {
             </Modal>
           </Grid.Column>
         </Grid.Row>
+        <Footer />
       </Grid>
-      <Footer />
     </div>
   );
 };

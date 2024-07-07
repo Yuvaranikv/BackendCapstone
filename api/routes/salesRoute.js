@@ -1,7 +1,33 @@
 const express = require('express');
 const Sales = require('../models/Sales');
+const Book=require('../models/Book');
 
 const router = express.Router();
+
+router.get('/', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;  // Default to page 1 if not provided
+  const limit = parseInt(req.query.limit) || 10; // Default limit to 10 items per page
+
+  try {
+    const offset = (page - 1) * limit;
+    const sales = await Sales.findAll({
+      where: { isActive: true },
+      offset: offset,
+      limit: limit,
+      include: [{ model: Book, attributes: ['title'] }],
+    });
+
+    const totalSalesCount = await Sales.count();
+
+    res.json({
+      sales: sales,
+      totalCount: totalSalesCount
+    });
+  } catch (err) {
+    console.error('Error retrieving Sales', err);
+    res.status(500).send('Error retrieving Sales');
+  }
+});
 
 // GET all sales
 router.get('/', async (req, res) => {

@@ -11,7 +11,7 @@ import {
   ModalContent,
   ModalDescription,
   Icon,
-  Pagination,
+  Pagination,Header,Segment
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -28,7 +28,7 @@ const Genreslist = () => {
   const [selectedGenres, setSelectedGenres] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5); 
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteGenresId, setDeleteGenresId] = useState(null);
@@ -50,7 +50,6 @@ const Genreslist = () => {
       console.error("Error fetching all genres:", error);
     }
   };
-
 
   const fetchGenres = async () => {
     try {
@@ -177,7 +176,7 @@ const Genreslist = () => {
   const handleSearch = (e) => {
     setSearchText(e.target.value);
     if (e.target.value === "") {
-      setFilteredGenres(genres); 
+      setFilteredGenres(genres);
     } else {
       setFilteredGenres(
         allGenres.filter((genres) =>
@@ -201,7 +200,10 @@ const Genreslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <div class="ui grid">
+            <Header as="h2">
+                 Genres
+                </Header>
+                  <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
                   <button
@@ -231,7 +233,7 @@ const Genreslist = () => {
             </div>
             <Modal open={open} onClose={() => setOpen(false)}>
               <ModalHeader>
-                {selectedGenres ? "Edit Genres" : "Add New Genres"}
+               {selectedGenres ? "Edit Genres" : "Add New Genres"}
               </ModalHeader>
               <ModalContent>
                 <ModalDescription>

@@ -10,7 +10,7 @@ import {
   ModalHeader,
   ModalContent,
   ModalDescription,
-  Icon,
+  Icon,Header
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -221,6 +221,9 @@ const AuthorsList = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
+            <Header as="h2">
+                 Author
+                </Header>
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">

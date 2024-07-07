@@ -12,7 +12,7 @@ import {
   ModalDescription,
   Icon,
   Dropdown,
-  Image,
+  Image,Header
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -311,6 +311,9 @@ const AddNewBook = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
+            <Header as="h2">
+                 Book
+                </Header>
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
@@ -448,6 +451,8 @@ const AddNewBook = () => {
                   <Table.HeaderCell sorted={direction} onClick={handleSort}>
                     Book
                   </Table.HeaderCell>
+                  <Table.HeaderCell>Author</Table.HeaderCell>
+                  <Table.HeaderCell>Genres</Table.HeaderCell>
                   <Table.HeaderCell>Price</Table.HeaderCell>
                   <Table.HeaderCell>Publication Date</Table.HeaderCell>
                   <Table.HeaderCell>Edit</Table.HeaderCell>
@@ -460,6 +465,8 @@ const AddNewBook = () => {
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
                     {/* Display serial number */}
                     <Table.Cell>{book.title}</Table.Cell>
+                    <Table.HeaderCell>{book.Author.name}</Table.HeaderCell>
+                    <Table.HeaderCell>{book.Genres.genre_name}</Table.HeaderCell>
                     <Table.Cell>{book.price}</Table.Cell>
                     <Table.Cell>{formatDate(book.publication_date)}</Table.Cell>
                     <Table.Cell>

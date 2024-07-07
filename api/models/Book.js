@@ -2,7 +2,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const Author = require("./Author");
-const Genre = require("./Genres");
+const Genres = require("./Genres");
 
 const Book = sequelize.define(
   "Book",
@@ -80,5 +80,6 @@ const Book = sequelize.define(
     tableName: "books",
   }
 );
-
+Book.belongsTo(Author, { foreignKey: 'author_id', as: 'Author' });
+Book.belongsTo(Genres, { foreignKey: 'genre_id', as: 'Genres' });
 module.exports = Book;

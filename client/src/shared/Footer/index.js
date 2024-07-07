@@ -4,7 +4,7 @@ import './styles.css';
 const Footer = () => {
   return (
     <div className="footer">
-    <p >© Copyright 2021, All Rights Reserved by Postcraft</p></div>
+    <p >© Copyright 2021, All Rights Reserved by Book Store</p></div>
   )
 }
 

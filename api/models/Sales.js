@@ -48,5 +48,5 @@ const Sales = sequelize.define(
     tableName: "sales", 
   }
 );
-
+Sales.belongsTo(Book, { foreignKey: 'bookid' });
 module.exports = Sales;
