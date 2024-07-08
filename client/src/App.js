@@ -11,6 +11,8 @@ import Genreslist from "./pages/genres/list-genres";
 import Purchaselist from "./pages/purchase/list-purchase";
 import Saleslist from "./pages/sales/list-sales";
 import ListStock from "./pages/stock/list-stock";
+import HomePage from "./pages/home";
+import BooksMenu from "./pages/books/books-menu";
 
 function App() {
   return (
@@ -18,7 +20,9 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/" element={<LoginPage />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/books/list" element={<AddNewBook />} />
+          <Route path="/books/menu" element={<BooksMenu/>}/>
           <Route path="/authors/list" element={<ListAuthors />} />
           <Route path="/genres/list" element={<Genreslist />} />
           <Route path="/purchase/list" element={<Purchaselist />} />

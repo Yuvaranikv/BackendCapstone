@@ -47,4 +47,7 @@
   padding: 8px; /* Adjust padding */
 }
 
+.ui.form{
+  padding-top: 0%!important;
+}
  

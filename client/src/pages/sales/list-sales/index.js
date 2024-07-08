@@ -14,7 +14,7 @@ import {
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
-import BookHeader from "../../../shared/Header";
+import SalesHeader from "../../../pages/sales/sales-header";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -230,7 +230,7 @@ const Saleslist = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            <SalesHeader />
             <Header as="h2"> {selectedSale ? "Sales" : "Sales"}</Header>
             <Form onSubmit={handleSubmit}>
               <Form.Group>

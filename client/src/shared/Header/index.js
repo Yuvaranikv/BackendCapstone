@@ -8,9 +8,7 @@ import bannerImage from '../../assets/images/banner2.jpg'; // Update the import 
 const BookHeader = () => {
   return (
     <div className="book-header" style={{ backgroundImage: `url(${bannerImage})` }}>
-      <Header as='h2' textAlign='center'>
-        Book Store
-      </Header>
+      
     </div>
   );
 };

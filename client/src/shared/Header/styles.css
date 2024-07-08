@@ -1,12 +1,12 @@
 /* src/components/Header/styles.css */
 .book-header {
-    display: flex;
+    /* display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; */
     height: 250px;
     background-size: cover;
     background-position: center;
-    color: black;
-    text-align: center;
+    /* color: black;
+    text-align: center;  */
   }
   

@@ -15,12 +15,13 @@ import {
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
-import BookHeader from "../../../shared/Header";
+// import BookHeader from "../../../shared/Header";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PurchaseHeader from "../purchase-header";
 
 const Purchaselist = () => {
   const [purchases, setPurchases] = useState([]);
@@ -216,7 +217,7 @@ const Purchaselist = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            <PurchaseHeader />
             <Header as='h2'> {selectedPurchase ? "Purchase" : "Purchase"}</Header>
             <Form onSubmit={handleSubmit}>
                 <Form.Group>

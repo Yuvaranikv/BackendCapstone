@@ -1,0 +1,12 @@
+
+.purchase-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    color: black;
+    text-align: center;
+  }
+  

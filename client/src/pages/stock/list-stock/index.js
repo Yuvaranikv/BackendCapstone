@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Grid, Header,Button,Icon } from "semantic-ui-react";
+import { Table, Grid, Header, Button, Icon,Label } from "semantic-ui-react";
 import Navbar from "../../../shared/Navbar";
-import BookHeader from "../../../shared/Header";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import Footer from "../../../shared/Footer";
+import StockHeader from "../stock-header";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const ListStock = () => {
   const [stockData, setStockData] = useState([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5); // Adjust based on your backend limit
+  const [pageSize, setPageSize] = useState(10); // Adjust based on your backend limit
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
@@ -31,23 +36,20 @@ const ListStock = () => {
     const pageNumbers = [];
 
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-      // Create a button element for each page number
       const button = (
         <Button
           key={pageNumber}
           onClick={() => handlePageClick(pageNumber)}
-          disabled={pageNumber === page} // Disable current page button
-          primary={pageNumber === page} // Highlight current page button
+          disabled={pageNumber === page}
+          primary={pageNumber === page}
         >
           {pageNumber}
         </Button>
       );
 
-      // Push the button element into the pageNumbers array
       pageNumbers.push(button);
     }
 
-    // Return the array of page number buttons
     return pageNumbers;
   };
 
@@ -59,6 +61,38 @@ const ListStock = () => {
     setPage(page - 1);
   };
 
+  const exportToExcel = () => {
+    try {
+      const ws = XLSX.utils.json_to_sheet(stockData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "StockData");
+      XLSX.writeFile(wb, "stock_data.xlsx");
+      toast.success("Data Exported to Excel successfully");
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      toast.error("Error exporting data");
+    }
+  };
+
+  const getSoldBadgeAndCaption = (sold) => {
+    let color = "red";
+    let caption = "Stock will empty soon";
+
+    if (sold > 10) {
+      color = "green";
+      caption = "Fine";
+    } else if (sold === 0) {
+      color = "orange";
+      caption = "Stock is empty";
+    }
+
+    return (
+      <Label color={color} className="badge-sold">
+        {caption}
+      </Label>
+    );
+  };
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -66,32 +100,59 @@ const ListStock = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            <StockHeader />
             <Header as="h2">Stock</Header>
+            <div className="eight wide column right-aligned">
+              <div className="search-container">
+                <div className="ui">
+                  <div className="ui icon input">
+                    <button
+                      className="ui labeled icon green button"
+                      onClick={exportToExcel}
+                    >
+                      <Icon name="file excel outline"></Icon>Export to Excel
+                    </button>
+                  </div>
+                  <div className="results"></div>
+                </div>
+              </div>
+            </div>
             <Table celled>
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Book ID</Table.HeaderCell>
+                  <Table.HeaderCell>Cover Page</Table.HeaderCell>
                   <Table.HeaderCell>Title</Table.HeaderCell>
                   <Table.HeaderCell>Purchased</Table.HeaderCell>
                   <Table.HeaderCell>Sold</Table.HeaderCell>
                   <Table.HeaderCell>Stock</Table.HeaderCell>
+                  <Table.HeaderCell>Info</Table.HeaderCell>
+                  <Table.HeaderCell>View More</Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
                 {stockData.map((item) => (
                   <Table.Row key={item.book_id}>
-                    <Table.Cell>{item.book_id}</Table.Cell>
-                    <Table.Cell>{item.title}</Table.Cell>
-                    <Table.Cell>{item.purchase}</Table.Cell>
-                    <Table.Cell>{item.sold}</Table.Cell>
-                    <Table.Cell>{item.stock}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>{item.book_id}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>
+                      <img
+                        src={item.imageURL}
+                        alt="Cover Page"
+                        style={{ width: "50px", height: "70px" }}
+                      />
+                    </Table.Cell>
+                    <Table.Cell style={{ width: "300px" }}>{item.title}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>{item.purchase}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}> {item.sold}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>{item.stock}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>  {getSoldBadgeAndCaption(item.sold)}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}><Icon name="info circle"></Icon> </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
               <Table.Footer>
                 <Table.Row>
-                  <Table.HeaderCell colSpan="6" textAlign="center">
+                  <Table.HeaderCell colSpan="8" textAlign="center">
                     <Button
                       icon
                       labelPosition="left"
@@ -119,6 +180,7 @@ const ListStock = () => {
         </Grid.Row>
       </Grid>
       <Footer />
+      <ToastContainer />
     </div>
   );
 };

@@ -10,10 +10,10 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleHomeClick = () => {
-    navigate('/'); 
+    navigate('/home'); 
   };
   const handleBooksClick=() =>{
-    navigate('/books/list');
+    navigate('/books/menu');
   }
 
   const handleAuthorsClick=() =>{
@@ -33,6 +33,10 @@ const Navbar = () => {
   const handleStocksClick=() =>{
     navigate('/stock/list');
   }
+
+  const handleSignoutClick = () => {
+    navigate('/'); 
+  };
   return (
     <Sidebar
       as={Menu}
@@ -53,14 +57,6 @@ const Navbar = () => {
           <Icon name="book" />
           Books
         </Menu.Item>
-        <Menu.Item as="a" onClick={handleAuthorsClick}>
-          <Icon name="user circle" />
-          Authors
-        </Menu.Item>
-        <Menu.Item as="a" onClick={handleGenesClick}>
-          <Icon name="book" />
-          Genres
-        </Menu.Item>
         <Menu.Item as="a" onClick={handlePurchaseClick}>
         <i class="shopping cart icon"></i>
           Purchase
@@ -73,7 +69,15 @@ const Navbar = () => {
         <Icon name="chart line" />
           Stock
         </Menu.Item>
-        <Menu.Item as="a" onClick={handleHomeClick}>
+        {/* <Menu.Item as="a" onClick={handleAuthorsClick}>
+          <Icon name="user circle" />
+          Authors
+        </Menu.Item>
+        <Menu.Item as="a" onClick={handleGenesClick}>
+          <Icon name="book" />
+          Genres
+        </Menu.Item> */}
+        <Menu.Item as="a" onClick={handleSignoutClick}>
         <Icon name="sign-out" />
           Sign-out
         </Menu.Item>

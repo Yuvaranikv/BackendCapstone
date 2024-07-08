@@ -346,7 +346,7 @@ const AddNewBook = () => {
               open={open}
               onClose={() => setOpen(false)}
               size="small"
-              style={{ height: "80vh" }}
+              style={{ height: "90vh" }}
             >
               <ModalHeader>
                 {selectedBook ? "Edit Book" : "Add New Book"}
@@ -465,8 +465,8 @@ const AddNewBook = () => {
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
                     {/* Display serial number */}
                     <Table.Cell>{book.title}</Table.Cell>
-                    <Table.HeaderCell>{book.Author.name}</Table.HeaderCell>
-                    <Table.HeaderCell>{book.Genres.genre_name}</Table.HeaderCell>
+                    <Table.Cell>{book.Author.name}</Table.Cell>
+                    <Table.Cell>{book.Genres.genre_name}</Table.Cell>
                     <Table.Cell>{book.price}</Table.Cell>
                     <Table.Cell>{formatDate(book.publication_date)}</Table.Cell>
                     <Table.Cell>
@@ -494,7 +494,7 @@ const AddNewBook = () => {
               </Table.Body>
               <Table.Footer>
                 <Table.Row>
-                  <Table.HeaderCell colSpan="6" textAlign="center">
+                  <Table.HeaderCell colSpan="8" textAlign="center">
                     <Button
                       icon
                       labelPosition="left"

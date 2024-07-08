@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "semantic-ui-css/semantic.min.css";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Form, Button, Grid, Header, Segment } from "semantic-ui-react";
 import "./styles.css";
 import axios from "axios";
@@ -8,7 +8,7 @@ import axios from "axios";
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +18,7 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         console.log("Redirecting to Add New Books page...");
-        navigate('/books/list');//Redirect to AddNewBook Page
-       // window.location.href = "/pages/AddNewBook";
+        navigate('/home');
       }
     } catch (error) {
       console.error("Login error:", error); // Handle error response
@@ -28,8 +27,8 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <Grid textAlign="center" style={{ height: "100vh" }} verticalAlign="middle">
-        <Grid.Column style={{ maxWidth: 450 }}>
+      <Grid textAlign="right" style={{ height: '100vh' }} verticalAlign="middle">
+        <Grid.Column className="login-box">
           <Header as="h2" color="black" textAlign="center">
             Log-in to your account
           </Header>
@@ -52,7 +51,6 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-
               <Button color="black" fluid size="large" type="submit">
                 Login
               </Button>
