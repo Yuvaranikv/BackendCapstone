@@ -13,10 +13,12 @@ import {
   CardHeader,
   CardMeta,
   Image,
-  CardGroup,List,ListItem,
+  CardGroup,
+  List,
+  ListItem,
   Segment,
   SegmentInline,
-  GridColumn
+  GridColumn,
 } from "semantic-ui-react";
 import Navbar from "../../shared/Navbar";
 import * as XLSX from "xlsx";
@@ -25,6 +27,7 @@ import Footer from "../../shared/Footer";
 import HomeHeader from "../home/home-header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import './styles.css'; // Add this import for CSS
 
 const HomePage = () => {
   const [stockData, setStockData] = useState([]);
@@ -59,8 +62,12 @@ const HomePage = () => {
   const fetchBookSalesData = async () => {
     try {
       const response = await axios.get("http://localhost:3000/stock/bookssold");
-      setBookSalesData(response.data);
-      console.log(response.data);
+      const data = response.data.map(item => ({
+        ...item,
+        BooksSoldToday: item.BooksSoldToday === null ? 0 : item.BooksSoldToday
+      }));
+      setBookSalesData(data);
+      console.log(data);
     } catch (error) {
       console.error("Error fetching stock data:", error);
     }
@@ -71,7 +78,10 @@ const HomePage = () => {
       const response = await axios.get(
         "http://localhost:3000/stock/totalsales"
       );
-      setTotalSalesData(response.data);
+      const data=response.data.map(item=>({
+        ...item,TotalSalesToday:item.TotalSalesToday===null?0:item.TotalSalesToday
+      }));
+      setTotalSalesData(data);
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching stock data:", error);
@@ -101,7 +111,9 @@ const HomePage = () => {
   };
 
   const getStockAlertBooks = () => {
-    return stockAlertData.filter(item => item.stock <= 10 || item.stock === null);
+    return stockAlertData.filter(
+      (item) => item.stock <= 10 || item.stock === null
+    );
     console.log(stockData);
   };
 
@@ -112,44 +124,36 @@ const HomePage = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-          <HomeHeader />
+            <HomeHeader />
             <Header as="h2">Home</Header>
             <Card.Group itemsPerRow={3}>
               {stockData.map((item) => (
-                <Card color="orange" style={{ width: "20%" }}>
-                  <Header as="h2" align="center">
-                    {" "}
+                <Card color="orange" className="fixed-size-card">
+                  <Header as="h2" align="center"style={{ padding:10}}>
                     Books InStock
                   </Header>
                   <CardContent>
-                    <CardHeader align="center"> {item.total_stock}</CardHeader>
+                    <CardHeader align="center">{item.total_stock}</CardHeader>
                   </CardContent>
                 </Card>
               ))}
               {booksalesData.map((item) => (
-                <Card color="blue" style={{ width: "20%" }}>
-                  <Header as="h2" align="center">
-                    {" "}
+                <Card color="blue" className="fixed-size-card">
+                  <Header as="h2" align="center" style={{ padding:10}}>
                     Books Sold Today
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">
-                      {item.BooksSoldToday}
-                    </CardHeader>
+                    <CardHeader align="center">{item.BooksSoldToday}</CardHeader>
                   </CardContent>
                 </Card>
               ))}
               {totalsalesData.map((item) => (
-                <Card color="green" style={{ width: "20%" }}>
-                  <Header as="h2" align="center">
-                    {" "}
+                <Card color="green" className="fixed-size-card">
+                  <Header as="h2" align="center" style={{ padding:10}}>
                     Today's Sales
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">
-                      {" "}
-                      {item.TotalSalesToday}
-                    </CardHeader>
+                    <CardHeader align="center">{item.TotalSalesToday}</CardHeader>
                   </CardContent>
                 </Card>
               ))}
@@ -157,19 +161,19 @@ const HomePage = () => {
             <Header as="h2">Top 5 selling books</Header>
             <Card.Group itemsPerRow={5}>
               {topsellingData.map((item) => (
-                 <Card key={item.id} style={{ height: "300px"  }}>
+                <Card key={item.id} className="fixed-size-card">
                   <Image
                     src={item.imageURL}
-                    wrapped
+                   
                     ui={false}
-                    style={{ width: "230px" }}
+                    className="fixed-size-image"
                   />
                   <CardContent>
                     <CardHeader>{item.title}</CardHeader>
                     <CardMeta>{item.author}</CardMeta>
                     <CardDescription>{item.description}</CardDescription>
                   </CardContent>
-                  <CardContent extra>
+                  <CardContent extra className="sold-number">
                     <a>
                       <Icon name="user" />
                       {item.total_quantity_sold} Sold
@@ -178,58 +182,27 @@ const HomePage = () => {
                 </Card>
               ))}
             </Card.Group>
-            
-            <div style={{ marginTop: "250px" }}>
-              <Segment>
-                        <Header as="h2">Stock Alert</Header>
-            <List>
-              {getStockAlertBooks().map((item) => (
-                <ListItem key={item.id}>
-                  <Icon name="warning circle" color="red" />
-                            {item.title} -   {item.stock === null ? "Stock is empty" : `Only ${item.stock} left`}
-                             </ListItem>
-                          ))}
-                       </List>
-            </Segment>
-            </div>
+
             <div style={{ marginTop: "50px" }}>
-            <Header as="h2">Book Search: Quick </Header>
-            <div class="ui grid">
-              <div class="eight wide column left-aligned">
-              {/* <div class="search-container"> */}
-                  <div class="ui ">
-                    <label>Select Author : </label>
-                    <div class="ui icon input">
-                      <input
-                        type="text"
-                        placeholder="Search Author"
-                        
-                      />
-                      <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                  </div>
-                {/* </div> */}
-              </div>
-             
-              <div class="four wide column right-aligned">
-                {/* <div class="search-container"> */}
-                  <div class="ui ">
-                    <label>Select Book : </label>
-                    <div class="ui icon input">
-                      <input
-                        type="text"
-                        placeholder="Search Book"
-                                         />
-                      <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                  </div>
-                {/* </div> */}
-              </div>
-              
+              <Segment>
+                <Header as="h2">Stock Alert</Header>
+                <Grid>
+                  <Grid.Row columns={3}>
+                    {getStockAlertBooks().map((item) => (
+                      <Grid.Column key={item.id}>
+                        <Segment>
+                          <Icon name="warning circle" color="red" />
+                          {item.title} -{" "}
+                          {item.stock === null
+                            ? "Stock is empty"
+                            : `Only ${item.stock} left`}
+                        </Segment>
+                      </Grid.Column>
+                    ))}
+                  </Grid.Row>
+                </Grid>
+              </Segment>
             </div>
-           </div>
           </Grid.Column>
         </Grid.Row>
       </Grid>

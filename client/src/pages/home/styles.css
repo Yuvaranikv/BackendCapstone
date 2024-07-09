@@ -1,0 +1,4 @@
+.fixed-size-image {
+    height:350px; /* Adjust height as needed */
+    object-fit: cover;
+  }

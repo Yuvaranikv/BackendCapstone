@@ -109,6 +109,44 @@ const ListStock = () => {
             <Navbar />
             <StockHeader />
             <Header as="h2">Stock</Header>
+            <div style={{ marginTop: "50px" }}>
+            <Header as="h2">Book Search: Quick </Header>
+            <div class="ui grid">
+              <div class="eight wide column left-aligned">
+              {/* <div class="search-container"> */}
+                  <div class="ui ">
+                    <label>Select Author : </label>
+                    <div class="ui icon input">
+                      <input
+                        type="text"
+                        placeholder="Search Author"
+                        
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                {/* </div> */}
+              </div>
+             
+              <div class="four wide column right-aligned">
+                {/* <div class="search-container"> */}
+                  <div class="ui ">
+                    <label>Select Book : </label>
+                    <div class="ui icon input">
+                      <input
+                        type="text"
+                        placeholder="Search Book"
+                                         />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                {/* </div> */}
+              </div>
+              
+            </div>
+           </div>
             <div className="eight wide column right-aligned">
               <div className="search-container">
                 <div className="ui">
