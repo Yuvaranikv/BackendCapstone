@@ -10,7 +10,8 @@ import {
   ModalHeader,
   ModalContent,
   ModalDescription,
-  Icon,Header
+  Icon,
+  Header,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
@@ -38,6 +39,7 @@ const AuthorsList = () => {
   const [filteredAuthors, setFilteredAuthors] = useState([]);
   const [direction, setDirection] = useState(null);
   const [allAuthors, setAllAuthors] = useState([]);
+  const [authorNameClicked, setAuthorNameClicked] = useState(false);
 
   useEffect(() => {
     fetchAuthors();
@@ -48,9 +50,8 @@ const AuthorsList = () => {
     try {
       const response = await axios.get(`http://localhost:3000/authors/all`);
       setAllAuthors(response.data.authors);
-      console.log(allAuthors);
     } catch (error) {
-      console.error("Error fetching authors:", error);
+      console.error("Error fetching all authors:", error);
     }
   };
 
@@ -66,7 +67,6 @@ const AuthorsList = () => {
       setFilteredAuthors(authors);
       const totalPagesCount = Math.ceil(totalCount / pageSize);
       setTotalPages(totalPagesCount);
-      console.log(totalCount);
     } catch (error) {
       console.error("Error fetching authors:", error);
     }
@@ -82,16 +82,17 @@ const AuthorsList = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setAuthorNameClicked(true);
+
     if (selectedAuthor) {
       try {
         const response = await axios.put(
           `http://localhost:3000/authors/edit/${selectedAuthor.author_id}`,
           {
             name: authorName,
-            biography: biography,
+            biography: biography || null,
           }
         );
-        console.log("Updated author:", response.data);
         fetchAuthors();
         setAuthorName("");
         setBiography("");
@@ -104,14 +105,10 @@ const AuthorsList = () => {
       }
     } else {
       try {
-        const response = await axios.post(
-          "http://localhost:3000/authors/add/",
-          {
-            name: authorName,
-            biography: biography,
-          }
-        );
-        console.log("Added new author:", response.data);
+        const response = await axios.post("http://localhost:3000/authors/add/", {
+          name: authorName,
+          biography: biography || null,
+        });
         fetchAuthors();
         setAuthorName("");
         setBiography("");
@@ -141,7 +138,6 @@ const AuthorsList = () => {
       await axios.delete(
         `http://localhost:3000/authors/delete/${deleteAuthorId}`
       );
-      console.log("Deleted author");
       toast.success("Author deleted successfully");
       fetchAuthors();
       setConfirmOpen(false); // Close confirmation modal after deletion
@@ -164,30 +160,27 @@ const AuthorsList = () => {
     const pageNumbers = [];
 
     for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
-      // Create a button element for each page number
       const button = (
         <Button
           key={pageNumber}
           onClick={() => handlePageClick(pageNumber)}
-          disabled={pageNumber === page} // Disable current page button
-          primary={pageNumber === page} // Highlight current page button
+          disabled={pageNumber === page}
+          primary={pageNumber === page}
         >
           {pageNumber}
         </Button>
       );
 
-      // Push the button element into the pageNumbers array
       pageNumbers.push(button);
     }
 
-    // Return the array of page number buttons
     return pageNumbers;
   };
 
   const handleSearch = (e) => {
     setSearchText(e.target.value);
     if (e.target.value === "") {
-      setFilteredAuthors(authors); // Reset filteredAuthors when search is cleared
+      setFilteredAuthors(authors);
     } else {
       setFilteredAuthors(
         allAuthors.filter((author) =>
@@ -195,7 +188,6 @@ const AuthorsList = () => {
         )
       );
     }
-    console.log(searchText);
   };
 
   const handleResetSearch = () => {
@@ -221,9 +213,7 @@ const AuthorsList = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <Header as="h2">
-                 Author
-                </Header>
+            <Header as="h2">Author</Header>
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
@@ -264,7 +254,17 @@ const AuthorsList = () => {
                         placeholder="Enter Author Name"
                         value={authorName}
                         onChange={(e) => setAuthorName(e.target.value)}
+                        error={
+                          authorName.trim() === "" && authorNameClicked
+                            ? { content: "Please enter Author name", pointing: "below" }
+                            : null
+                        }
                       />
+                      {authorName.trim() === "" && authorNameClicked && (
+                        <div className="ui pointing red basic label">
+                          Please enter Author name
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <TextArea
@@ -302,7 +302,7 @@ const AuthorsList = () => {
                       <Button
                         className="btn btn-primary btn-sm"
                         color="green"
-                        size="mini" // Set the size here
+                        size="mini"
                         onClick={() => handleEditButtonClick(author)}
                       >
                         <Icon name="edit"></Icon> Edit
@@ -312,7 +312,7 @@ const AuthorsList = () => {
                       <Button
                         className="btn btn-primary btn-sm"
                         color="red"
-                        size="mini" // Set the size here
+                        size="mini"
                         onClick={() => handleDeleteButtonClick(author)}
                       >
                         <Icon name="delete"></Icon> Delete

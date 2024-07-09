@@ -24,7 +24,7 @@ const Author = sequelize.define('Author', {
   },
   biography: {
     type: DataTypes.TEXT,
-    allowNull: true, // If nullable in the database
+    allowNull: true, 
   },
   isActive: {
     type: DataTypes.BOOLEAN,
@@ -32,7 +32,7 @@ const Author = sequelize.define('Author', {
     defaultValue: true
   }
 }, {
-  tableName: 'authors' // Specify the actual table name if different from the model name
+  tableName: 'authors' 
  
 });
 

@@ -18,6 +18,9 @@ const AddAuthors = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (authorname.trim() === "") {
+      return;
+    }
     try {
       // const response = await axios.post("http://localhost:3000/userstest/", { username, password });
       console.log("Added");
@@ -45,6 +48,7 @@ const AddAuthors = () => {
                 placeholder="Enter Author Name"
                 value={authorname}
                 onChange={(e) => setAuthorName(e.target.value)}
+                error={authorname.trim() === "" ? { content: 'Please enter Author name', pointing: 'below' } : null}
               />
             </Form.Field>
             <Form.Field>

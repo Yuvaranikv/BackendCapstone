@@ -68,8 +68,8 @@ router.post("/add", async (req, res) => {
   try {
     const { name, biography } = req.body;
     //Validate input
-    if (!name || !biography) {
-      return res.status(400).send("Name and biography are required");
+    if (!name ) {
+      return res.status(400).send("Name is required");
     }
     const newAuthor = await Author.create({
       name,
@@ -94,8 +94,8 @@ router.put("/edit/:id", async (req, res) => {
       return res.status(404).send("Author not found");
     }
     // Validate input
-    if (!name || !biography) {
-      return res.status(400).send("Name and biography are required");
+    if (!name ) {
+      return res.status(400).send("Name is required");
     }
     await author.update({
       name,
