@@ -36,6 +36,7 @@ const Genreslist = () => {
   const [searchText, setSearchText] = useState("");
   const [filteredGenres, setFilteredGenres] = useState([]);
   const [allGenres, setAllGenres] = useState([]);
+  const [genresNameClicked, setgenresNameClicked] = useState(false);
 
   useEffect(() => {
     fetchAllGenres(); // Fetch all genres initially
@@ -79,6 +80,7 @@ const Genreslist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setgenresNameClicked(true);
     if (selectedGenres) {
       try {
         const response = await axios.put(
@@ -243,7 +245,17 @@ const Genreslist = () => {
                         placeholder="Enter Genres Name"
                         value={genresname}
                         onChange={(e) => setGenresName(e.target.value)}
+                        error={
+                          genresname.trim() === "" && genresNameClicked
+                            ? { content: "Please enter Genres name", pointing: "below" }
+                            : null
+                        }
                       />
+                      {genresname.trim() === "" && genresNameClicked && (
+                        <div className="ui pointing red basic label">
+                          Please enter Genres name
+                        </div>
+                      )}
                     </Form.Field>
                     <Button color="green" type="submit">
                       {selectedGenres ? "Update Genres" : "Add Genres"}
