@@ -167,7 +167,7 @@ const HomePage = () => {
                    
                     ui={false}
                     className="fixed-size-image"
-                  />
+                  /> 
                   <CardContent>
                     <CardHeader>{item.title}</CardHeader>
                     <CardMeta>{item.author}</CardMeta>
