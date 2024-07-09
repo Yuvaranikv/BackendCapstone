@@ -77,7 +77,8 @@ async function syncAndCreate() {
         publication_date: '1997-06-26', 
         ISBN: '9780590353427',
         imageURL: 'https://example.com/harry_potter.jpg',
-        description: 'The first book in the Harry Potter series by J.K. Rowling.'
+        description: 'The first book in the Harry Potter series by J.K. Rowling.',
+        rating: 4.9
       },
       { 
         title: 'A Game of Thrones', 
@@ -87,10 +88,99 @@ async function syncAndCreate() {
         publication_date: '1996-08-06', 
         ISBN: '9780553381689',
         imageURL: 'https://example.com/game_of_thrones.jpg',
-        description: 'The first book in the A Song of Ice and Fire series by George R.R. Martin.'
+        description: 'The first book in the A Song of Ice and Fire series by George R.R. Martin.',
+        rating: 4.8
       },
-      // Add more books with ISBN, rating, imageURL, and description as needed
+      { 
+        title: 'To Kill a Mockingbird', 
+        author_id: 3, 
+        genre_id: 2, 
+        price: 14.99, 
+        publication_date: '1960-07-11', 
+        ISBN: '9780061120084',
+        imageURL: 'https://example.com/to_kill_a_mockingbird.jpg',
+        description: 'A novel by Harper Lee published in 1960, instantly successful and has become a classic of modern American literature.',
+        rating: 4.7
+      },
+      { 
+        title: '1984', 
+        author_id: 4, 
+        genre_id: 3, 
+        price: 15.99, 
+        publication_date: '1949-06-08', 
+        ISBN: '9780451524935',
+        imageURL: 'https://example.com/1984.jpg',
+        description: 'A dystopian social science fiction novel and cautionary tale, written by the English writer George Orwell.',
+        rating: 4.6
+      },
+      { 
+        title: 'Pride and Prejudice', 
+        author_id: 5, 
+        genre_id: 4, 
+        price: 12.99, 
+        publication_date: '1813-01-28', 
+        ISBN: '9780141439518',
+        imageURL: 'https://example.com/pride_and_prejudice.jpg',
+        description: 'A romantic novel of manners written by Jane Austen in 1813.',
+        rating: 4.8
+      },
+      { 
+        title: 'The Hobbit', 
+        author_id: 6, 
+        genre_id: 1, 
+        price: 18.99, 
+        publication_date: '1937-09-21', 
+        ISBN: '9780547928227',
+        imageURL: 'https://example.com/the_hobbit.jpg',
+        description: 'A children\'s fantasy novel by English author J.R.R. Tolkien.',
+        rating: 4.9
+      },
+      { 
+        title: 'The Catcher in the Rye', 
+        author_id: 7, 
+        genre_id: 5, 
+        price: 13.99, 
+        publication_date: '1951-07-16', 
+        ISBN: '9780316769488',
+        imageURL: 'https://example.com/the_catcher_in_the_rye.jpg',
+        description: 'A novel by J.D. Salinger, partially published in serial form in 1945-1946 and as a novel in 1951.',
+        rating: 4.5
+      },
+      { 
+        title: 'The Great Gatsby', 
+        author_id: 8, 
+        genre_id: 5, 
+        price: 10.99, 
+        publication_date: '1925-04-10', 
+        ISBN: '9780743273565',
+        imageURL: 'https://example.com/the_great_gatsby.jpg',
+        description: 'A 1925 novel written by American author F. Scott Fitzgerald that follows a cast of characters living in the fictional towns of West Egg and East Egg on prosperous Long Island in the summer of 1922.',
+        rating: 4.4
+      },
+      { 
+        title: 'Moby Dick', 
+        author_id: 9, 
+        genre_id: 6, 
+        price: 11.99, 
+        publication_date: '1851-10-18', 
+        ISBN: '9781503280786',
+        imageURL: 'https://example.com/moby_dick.jpg',
+        description: 'A novel by Herman Melville, in which Captain Ahab seeks vengeance against Moby Dick, a white whale.',
+        rating: 4.2
+      },
+      { 
+        title: 'War and Peace', 
+        author_id: 10, 
+        genre_id: 7, 
+        price: 20.99, 
+        publication_date: '1869-01-01', 
+        ISBN: '9781853260629',
+        imageURL: 'https://example.com/war_and_peace.jpg',
+        description: 'A novel by the Russian author Leo Tolstoy, first published from 1865 to 1869.',
+        rating: 4.7
+      }
     ];
+    
 
     const books = await Book.bulkCreate(booksData);
     console.log('Books created:', books.map(book => book.toJSON()));

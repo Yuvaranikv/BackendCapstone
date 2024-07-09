@@ -23,6 +23,7 @@ const ListStock = () => {
     try {
       const response = await axios.get("http://localhost:3000/stock");
       setStockData(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching stock data:", error);
     }
@@ -74,19 +75,25 @@ const ListStock = () => {
     }
   };
 
-  const getSoldBadgeAndCaption = (sold) => {
-    let color = "red";
-    let caption = "Stock will empty soon";
-
-    if (sold > 10) {
+  const getSoldBadgeAndCaption = (stock) => {
+    let color;
+    let caption;
+  
+    if (stock === null) {
+      color = "orange";
+      caption = "Stock is empty";
+    } else if (stock > 10) {
       color = "green";
       caption = "Fine";
-    } else if (sold === 0) {
+    } else if (stock <= 10 && stock > 0) {
+      color = "red";
+      caption = "Stock will empty soon";
+    } else if (stock === 0) {
       color = "orange";
       caption = "Stock is empty";
     }
-
-    return (
+  
+       return (
       <Label color={color} className="badge-sold">
         {caption}
       </Label>
@@ -145,7 +152,7 @@ const ListStock = () => {
                     <Table.Cell style={{ width: "100px" }}>{item.purchase}</Table.Cell>
                     <Table.Cell style={{ width: "100px" }}> {item.sold}</Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>{item.stock}</Table.Cell>
-                    <Table.Cell style={{ width: "100px" }}>  {getSoldBadgeAndCaption(item.sold)}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>  {getSoldBadgeAndCaption(item.stock)}</Table.Cell>
                     <Table.Cell style={{ width: "100px" }}><Icon name="info circle"></Icon> </Table.Cell>
                   </Table.Row>
                 ))}
@@ -179,7 +186,7 @@ const ListStock = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
       <ToastContainer />
     </div>
   );

@@ -281,10 +281,10 @@ const AddNewBook = () => {
   };
 
   const handleFileUpload = async () => {
-    // if (!selectedFile) {
-    //   toast.error("Please select a file to upload.");
-    //   return;
-    // }
+    if (!selectedFile) {
+      toast.error("Please select a file to upload.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
