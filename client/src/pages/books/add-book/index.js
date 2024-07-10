@@ -12,12 +12,14 @@ import {
   ModalDescription,
   Icon,
   Dropdown,
-  Image,Header
+  Image,
+  Header,
+  Breadcrumb,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
 import BookHeader from "../../../shared/Header";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -47,10 +49,11 @@ const AddNewBook = () => {
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
   const [selectedGenresId, setSelectedGenresId] = useState(null);
   const [allBooks, setAllBooks] = useState([]);
-  const [isbnNo, setIsbnNo] = useState([]);
-  const [description, setDescription] = useState([]);
+  const [isbnNo, setIsbnNo] = useState("");
+  const [description, setDescription] = useState("");
   const [coverPage, setCoverPage] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [addBookClicked, setAddBookClicked] = useState(false);
 
   useEffect(() => {
     fetchBooks();
@@ -78,6 +81,7 @@ const AddNewBook = () => {
 
       setBooks(books);
       setFilteredBooks(books);
+      console.log(filteredBooks);
       const totalPagesCount = Math.ceil(totalCount / pageSize);
       setTotalPages(totalPagesCount);
       console.log(totalCount);
@@ -96,6 +100,7 @@ const AddNewBook = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setAddBookClicked(true);
     if (selectedBook) {
       try {
         const response = await axios.put(
@@ -281,10 +286,10 @@ const AddNewBook = () => {
   };
 
   const handleFileUpload = async () => {
-    if (!selectedFile) {
-      toast.error("Please select a file to upload.");
-      return;
-    }
+    // if (!file) {
+    //   toast.error("Please select a file to upload.");
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -303,6 +308,17 @@ const AddNewBook = () => {
     }
   };
 
+  const sections = [
+    {
+      key: "Home",
+      content: "Home",
+      as: Link,
+      to: "http://localhost:3001/home",
+    },
+    { key: "Books", content: "Books", as: Link, to: "/books/menu" },
+    { key: "Author", content: "Add", active: true },
+  ];
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -311,9 +327,8 @@ const AddNewBook = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <Header as="h2">
-                 Book
-                </Header>
+            <Header as="h2">Book</Header>
+            <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
@@ -343,6 +358,7 @@ const AddNewBook = () => {
               </div>
             </div>
             <Modal
+              closeIcon
               open={open}
               onClose={() => setOpen(false)}
               size="small"
@@ -359,7 +375,20 @@ const AddNewBook = () => {
                         placeholder="Enter Book Name"
                         value={bookName}
                         onChange={(e) => setBookName(e.target.value)}
+                        error={
+                          bookName.trim() === "" && addBookClicked
+                            ? {
+                                content: "Please enter Book name",
+                                pointing: "below",
+                              }
+                            : null
+                        }
                       />
+                      {bookName.trim() === "" && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please enter Book name
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <Dropdown
@@ -374,7 +403,20 @@ const AddNewBook = () => {
                         }))}
                         value={selectedAuthorId}
                         onChange={(e, { value }) => setSelectedAuthorId(value)}
+                        error={
+                          selectedAuthorId === null && addBookClicked
+                            ? {
+                                content: "Please select Author",
+                                pointing: "below",
+                              }
+                            : null
+                        }
                       />
+                      {selectedAuthorId === null && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please select Author
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <Dropdown
@@ -389,7 +431,20 @@ const AddNewBook = () => {
                         }))}
                         value={selectedGenresId}
                         onChange={(e, { value }) => setSelectedGenresId(value)}
+                        error={
+                          selectedGenresId === null && addBookClicked
+                            ? {
+                                content: "Please select Genres",
+                                pointing: "below",
+                              }
+                            : null
+                        }
                       />
+                      {selectedGenresId === null && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please select Genres
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <DatePicker
@@ -398,14 +453,40 @@ const AddNewBook = () => {
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Select Publication Date"
                         className="custom-datepicker"
+                        error={
+                          pdate === "" && addBookClicked
+                            ? {
+                                content: "Please select publication date",
+                                pointing: "below",
+                              }
+                            : null
+                        }
                       />
+                      {pdate === "" && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please select publication date
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <input
                         placeholder="Enter ISBN"
                         value={isbnNo}
                         onChange={(e) => setIsbnNo(e.target.value)}
+                        error={
+                          isbnNo === "" && addBookClicked
+                            ? {
+                                content: "Please enter ISBN No",
+                                pointing: "below",
+                              }
+                            : null
+                        }
                       />
+                      {isbnNo === "" && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please enter ISBN No
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <TextArea
@@ -424,10 +505,24 @@ const AddNewBook = () => {
                           placeholder="Amount"
                           id="amount"
                           value={price}
-                          onChange={(e) => setPrice(e.target.value)}
-                        ></input>
+                          onChange={(e) => {
+                            const inputPrice = e.target.value;
+                            // Only allow numbers and handle the state update
+                            if (/^\d*\.?\d*$/.test(inputPrice)) {
+                              setPrice(inputPrice);
+                            }
+                          }}
+                          pattern="^\d*\.?\d*$" // Pattern to allow only numbers and optional decimal
+                          title="Please enter a valid number" // Title for invalid input (optional)
+                        />
                         <div class="ui basic label">.00</div>
                       </div>
+                      {/* Error message for price validation */}
+                      {price === "" && addBookClicked && (
+                        <div className="ui pointing red basic label">
+                          Please enter only numbers
+                        </div>
+                      )}
                     </Form.Field>
                     <Form.Field>
                       <input type="file" onChange={handleFileChange} />
@@ -465,8 +560,10 @@ const AddNewBook = () => {
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
                     {/* Display serial number */}
                     <Table.Cell>{book.title}</Table.Cell>
-                    <Table.Cell>{book.Author.name}</Table.Cell>
-                    <Table.Cell>{book.Genres.genre_name}</Table.Cell>
+                    <Table.Cell>{book.Author?.name}</Table.Cell>{" "}
+                    {/* Optional chaining here */}
+                    <Table.Cell>{book.Genres?.genre_name}</Table.Cell>{" "}
+                    {/* Optional chaining here */}
                     <Table.Cell>{book.price}</Table.Cell>
                     <Table.Cell>{formatDate(book.publication_date)}</Table.Cell>
                     <Table.Cell>
@@ -518,6 +615,7 @@ const AddNewBook = () => {
                 </Table.Row>
               </Table.Footer>
               <Modal
+                closeIcon
                 open={confirmOpen}
                 onClose={() => setConfirmOpen(false)}
                 size="tiny"
@@ -541,7 +639,7 @@ const AddNewBook = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

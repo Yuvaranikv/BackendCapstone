@@ -19,7 +19,7 @@ import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Saleslist = () => {
   const [sales, setSales] = useState([]);
@@ -30,20 +30,33 @@ const Saleslist = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteSaleId, setDeleteSaleId] = useState(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
+  const [searchTextBook, setSearchTextBook] = useState("");
   const [filteredSales, setFilteredSales] = useState([]);
   const [allBooks, setAllBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState(null);
+  const [salesClicked, setSalesClicked] = useState(false);
+  const [quantityInStock, setQuantityInStock] = useState(0);
+  const [quantityError, setQuantityError] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [books, setBooks] = useState([]);
 
   useEffect(() => {
     fetchSales();
     fetchAllBooks();
   }, [page]); // Reload sales when page changes
+
+  useEffect(() => {
+    if (selectedBookId) {
+      fetchQuantityInStock(selectedBookId); // Fetch quantity in stock when selectedBookId changes
+    }
+   
+  }, [selectedBookId]);
 
   const fetchSales = async () => {
     try {
@@ -81,9 +94,16 @@ const Saleslist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedBookId || !quantitySold || !saleDate) {
-      toast.error("Please fill all required fields before submitting.");
+    setSalesClicked(true);
+    // if (!selectedBookId || !quantitySold || !saleDate) {
+    //   toast.error("Please fill all required fields before submitting.");
+    //   return;
+    // }
+    if (parseInt(quantitySold) > parseInt(quantityInStock)) {
+      setQuantityError("Quantity sold should be less than or equal to quantity in stock.");
       return;
+    } else {
+      setQuantityError("");
     }
     if (selectedSale) {
       try {
@@ -221,7 +241,65 @@ const Saleslist = () => {
     setQuantitySold("");
     setSaleDate("");
     setComments("");
+    setSalesClicked(false);
   };
+  const sections = [
+    {
+      key: "Home",
+      content: "Home",
+      as: Link,
+      to: "http://localhost:3001/home",
+    },
+    { key: "Books", content: "Books", as: Link, to: "/books/menu" },
+    { key: "Author", content: "Author", active: true },
+  ];
+
+  const fetchQuantityInStock = async (bookId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/stock/1`
+      );
+      const data=response.data;
+      console.log(response.data);
+
+        if (Array.isArray(data)) {
+        const stock = data.map(item => item.stock);
+        setQuantityInStock(stock[0] || 0); // Assuming you need the first stock value
+      } else {
+        setQuantityInStock(data.stock || 0);
+      }
+      
+      console.log(quantityInStock);
+    
+    } catch (error) {
+      console.error(
+        `Error fetching quantity in stock for book ${bookId}:`,
+        error
+      );
+       // Default to 0 or handle error case
+    }
+  };
+ // Get today's date in the format YYYY-MM-DD
+ const today = new Date().toISOString().split('T')[0];
+
+ const handleSearchBook = (e) => {
+  setSearchTextBook(e.target.value);
+  if (e.target.value === "") {
+    setFilteredSales(sales);
+  } else {
+    const filteredBooks = allBooks.filter((book) =>
+      book.title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+
+    const filteredBookIds = filteredBooks.map((book) => book.book_id);
+
+    const newFilteredSales = sales.filter((sale) =>
+      filteredBookIds.includes(sale.bookid)
+    );
+
+    setFilteredSales(newFilteredSales);
+  }
+};
 
   return (
     <div>
@@ -231,10 +309,28 @@ const Saleslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <SalesHeader />
-            <Header as="h2"> {selectedSale ? "Sales" : "Sales"}</Header>
+            <Header as="h2" style={{marginBottom:-10}}> {selectedSale ? "Sales" : "Sales"}</Header>
+            <div class="ui grid">
+                <div class="three wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input style={{marginBottom:10}}
+                        type="text"
+                        placeholder="Search Book"
+                        value={searchTextBook}
+                        onChange={handleSearchBook}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Form onSubmit={handleSubmit}>
               <Form.Group>
-                <Form.Field width={4} className="margin-top">
+                <Form.Field width={4} className="margin-top" required>
                   <label>Book</label>
                   <Dropdown
                     placeholder="Select Book"
@@ -247,29 +343,80 @@ const Saleslist = () => {
                     }))}
                     value={selectedBookId}
                     onChange={(e, { value }) => setSelectedBookId(value)}
+                    error={
+                      selectedBookId === null && salesClicked
+                        ? {
+                            content: "Please select a Book",
+                            pointing: "below",
+                          }
+                        : null
+                    }
                   />
+                  {selectedBookId === null && salesClicked && (
+                    <div className="ui pointing red basic label">
+                      Please select a Book
+                    </div>
+                  )}
                 </Form.Field>
-                <Form.Field width={4} className="margin-top">
-                  <label>Quantity Sold</label>
+                <Form.Field width={4} className="margin-top" required>
+                  <label>Quantity Sold </label>
                   <input
+                    type="number"
                     placeholder="Enter Quantity Sold"
                     value={quantitySold}
                     onChange={(e) => setQuantitySold(e.target.value)}
+                    error={
+                      quantitySold === "" && salesClicked
+                        ? {
+                            content: "Please enter Quantity Sold in numbers",
+                            pointing: "below",
+                          }
+                        : null
+                    }
                   />
+                  {quantitySold === "" && salesClicked && (
+                    <div className="ui pointing red basic label">
+                      Please enter Quantity Sold in numbers
+                    </div>
+                  )}
+                   {quantityError && (
+                  <div className="ui pointing red basic label">
+                    {quantityError}
+                  </div>
+                )}
                 </Form.Field>
                 <Form.Field width={4} className="margin-top">
+                  <label>Quantity in stock</label>
+                  <input disabled style={{ color: "red",fontWeight: "bold" }} value={quantityInStock} />
+                </Form.Field>
+                <Form.Field width={4} className="margin-top" required>
                   <label>Sale Date</label>
                   <input
                     type="date"
                     placeholder="Enter Sale Date"
                     value={saleDate}
                     onChange={(e) => setSaleDate(e.target.value)}
+                    max={today}
+                    error={
+                      saleDate === "" && salesClicked
+                        ? {
+                            content: "Please select date",
+                            pointing: "below",
+                          }
+                        : null
+                    }
                   />
+                  {saleDate === "" && salesClicked && (
+                    <div className="ui pointing red basic label">
+                      Please select date
+                    </div>
+                  )}
                 </Form.Field>
               </Form.Group>
               <Form.Field width={12}>
                 <label>Comments</label>
-                <textarea className="custom-textarea"
+                <textarea
+                  className="custom-textarea"
                   placeholder="Enter Comments"
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
@@ -354,6 +501,7 @@ const Saleslist = () => {
               </Table.Footer>
             </Table>
             <Modal
+              closeIcon
               open={confirmOpen}
               onClose={() => setConfirmOpen(false)}
               size="tiny"
@@ -376,7 +524,7 @@ const Saleslist = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

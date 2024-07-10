@@ -12,11 +12,12 @@ import {
   ModalDescription,
   Icon,
   Header,
+  Breadcrumb,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
 import BookHeader from "../../../shared/Header";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -105,10 +106,13 @@ const AuthorsList = () => {
       }
     } else {
       try {
-        const response = await axios.post("http://localhost:3000/authors/add/", {
-          name: authorName,
-          biography: biography || null,
-        });
+        const response = await axios.post(
+          "http://localhost:3000/authors/add/",
+          {
+            name: authorName,
+            biography: biography || null,
+          }
+        );
         fetchAuthors();
         setAuthorName("");
         setBiography("");
@@ -205,15 +209,29 @@ const AuthorsList = () => {
     setDirection(direction === "ascending" ? "descending" : "ascending");
   };
 
+  const sections = [
+    {
+      key: "Home",
+      content: "Home",
+      as: Link,
+      to: "http://localhost:3001/home",
+    },
+    { key: "Books", content: "Books", as: Link, to: "/books/menu" },
+    { key: "Author", content: "Author", active: true },
+  ];
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
         <Grid.Row style={{ padding: 0 }}>
-          <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
+          <Grid.Column width={2} style={{ padding: 0 }}>
+            {" "}
+          </Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
             <Header as="h2">Author</Header>
+            <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
@@ -242,21 +260,25 @@ const AuthorsList = () => {
                 </div>
               </div>
             </div>
-            <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal closeIcon open={open} onClose={() => setOpen(false)}>
               <ModalHeader>
                 {selectedAuthor ? "Edit Author" : "Add New Author"}
               </ModalHeader>
               <ModalContent>
                 <ModalDescription>
                   <Form onSubmit={handleSubmit}>
-                    <Form.Field>
+                    <Form.Field required>
+                      <label>Author Name</label>
                       <input
                         placeholder="Enter Author Name"
                         value={authorName}
                         onChange={(e) => setAuthorName(e.target.value)}
                         error={
                           authorName.trim() === "" && authorNameClicked
-                            ? { content: "Please enter Author name", pointing: "below" }
+                            ? {
+                                content: "Please enter Author name",
+                                pointing: "below",
+                              }
                             : null
                         }
                       />
@@ -267,6 +289,7 @@ const AuthorsList = () => {
                       )}
                     </Form.Field>
                     <Form.Field>
+                    <label>Biography</label>
                       <TextArea
                         placeholder="Enter Biography"
                         value={biography}
@@ -347,6 +370,7 @@ const AuthorsList = () => {
                 </Table.Row>
               </Table.Footer>
               <Modal
+                closeIcon
                 open={confirmOpen}
                 onClose={() => setConfirmOpen(false)}
                 size="tiny"
@@ -370,7 +394,7 @@ const AuthorsList = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

@@ -16,7 +16,7 @@ import {
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
 // import BookHeader from "../../../shared/Header";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -30,7 +30,7 @@ const Purchaselist = () => {
   const [comments, setComments] = useState("");
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [filteredPurchases, setFilteredPurchases] = useState([]);
@@ -39,6 +39,11 @@ const Purchaselist = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deletePurchaseId, setDeletePurchaseId] = useState(null);
   const navigate = useNavigate();
+  const [purchaseClicked, setPurchaseClicked] = useState(false);
+  const [searchTextBook, setSearchTextBook] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState([]);
+  const [books, setBooks] = useState([]);
+
 
   useEffect(() => {
     fetchPurchases();
@@ -70,11 +75,12 @@ const Purchaselist = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setPurchaseClicked(true);
     // Validation checks
-  if (!selectedBookId || !quantityInStock || !purchaseDate) {
-    toast.error("Please fill all required fields before submitting.");
-    return;
-  }
+  // if (!selectedBookId || !quantityInStock || !purchaseDate) {
+  //   toast.error("Please fill all required fields before submitting.");
+  //   return;
+  // }
     const payload = {
       bookid: selectedBookId,
       quantityinstock: quantityInStock,
@@ -116,6 +122,7 @@ const Purchaselist = () => {
     setQuantityInStock("");
     setPurchaseDate("");
     setComments("");
+    setPurchaseClicked(false);
   };
 
   const handleEditButtonClick = (purchase) => {
@@ -210,6 +217,35 @@ const Purchaselist = () => {
     setPage(page - 1);
   };
 
+  const sections = [
+    { key: "Home", content: "Home", as: Link, to: "http://localhost:3001/home" },
+    { key: "Books", content: "Books", as: Link, to: "/books/menu" },
+    { key: "Author", content: "Author", active: true },
+  ];
+ // Get today's date in the format YYYY-MM-DD
+ const today = new Date().toISOString().split('T')[0];
+ console.log(today);
+
+ const handleSearchBook = (e) => {
+  setSearchTextBook(e.target.value);
+  if (e.target.value === "") {
+    setFilteredPurchases(purchases);
+  } else {
+    const filteredBooks = allBooks.filter((book) =>
+      book.title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+
+    const filteredBookIds = filteredBooks.map((book) => book.book_id);
+
+    const newFilteredPurchases = purchases.filter((purchase) =>
+      filteredBookIds.includes(purchase.bookid)
+    );
+
+    setFilteredPurchases(newFilteredPurchases);
+  }
+};
+
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -218,10 +254,28 @@ const Purchaselist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <PurchaseHeader />
-            <Header as='h2'> {selectedPurchase ? "Purchase" : "Purchase"}</Header>
+            <Header as='h2'style={{marginBottom:-10}}> {selectedPurchase ? "Purchase" : "Purchase"}</Header>
+            <div class="ui grid">
+                <div class="three wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input style={{marginBottom:10}}
+                        type="text"
+                        placeholder="Search Book"
+                        value={searchTextBook}
+                        onChange={handleSearchBook}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
-                <Form.Field width={4} className="margin-top">
+                <Form.Field width={4} className="margin-top" required>
                 <label>Book</label>
                   <Dropdown
                     placeholder="Select Book"
@@ -234,24 +288,61 @@ const Purchaselist = () => {
                     }))}
                     value={selectedBookId}
                     onChange={(e, { value }) => setSelectedBookId(value)}
+                    error={
+                      selectedBookId === null && purchaseClicked
+                        ? {
+                            content: "Please select a Book",
+                            pointing: "below",
+                          }
+                        : null
+                    }
                   />
+                  {selectedBookId=== null && purchaseClicked && (
+                        <div className="ui pointing red basic label">
+                          Please select a Book
+                        </div>
+                      )}
                 </Form.Field>
-                <Form.Field width={4} className="margin-top">
+                <Form.Field width={4} className="margin-top" required>
                 <label>Quantity in Stock</label>
-                  <Input
+                  <Input type="number"
                     placeholder="Enter Quantity in Stock"
                     value={quantityInStock}
                     onChange={(e) => setQuantityInStock(e.target.value)}
+                    error={
+                      quantityInStock === "" && purchaseClicked
+                        ? { content: "Please enter Quantity in Stock in numbers", pointing: "below" }
+                        : null
+                    }
                   />
+                  {quantityInStock === "" && purchaseClicked && (
+                    <div className="ui pointing red basic label">
+                      Please enter Quantity in Stock in numbers
+                    </div>
+                  )}
                 </Form.Field>
-                <Form.Field width={4} className="margin-top">
+                <Form.Field width={4} className="margin-top" required>
                 <label>Purchase Date</label>
                   <Input
                     type="date"
                     placeholder="Enter Purchase Date"
                     value={purchaseDate}
                     onChange={(e) => setPurchaseDate(e.target.value)}
+                    max={today}
+                    error={
+                      purchaseDate === "" && purchaseClicked
+                        ? {
+                            content: "Please select date",
+                            pointing: "below",
+                          }
+                        : null
+                    }
                   />
+                  {purchaseDate === "" && purchaseClicked && (
+                    <div className="ui pointing red basic label">
+                      Please select date
+                    </div>
+                  )}
                 </Form.Field>
               </Form.Group>
                 <Form.Field width={12}   >
@@ -338,6 +429,7 @@ const Purchaselist = () => {
                 </Table.Row>
               </Table.Footer>
               <Modal
+               closeIcon
                 open={confirmOpen}
                 onClose={() => setConfirmOpen(false)}
                 size="tiny"
@@ -362,7 +454,7 @@ const Purchaselist = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
       <ToastContainer />
     </div>
   );

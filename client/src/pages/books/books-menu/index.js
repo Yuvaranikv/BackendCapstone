@@ -97,7 +97,7 @@ const BooksMenu = () => {
               </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

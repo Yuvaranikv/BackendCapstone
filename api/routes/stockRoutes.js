@@ -114,4 +114,28 @@ router.get("/topsellingbooks", async (req, res) => {
   }
 });
 
+router.get("/:bookId", async (req, res) => {
+  const { bookId } = req.params; // Extract bookId from request params
+  try {
+    const query = `
+    select distinct b.book_id, b.title, b.price, b.imageURL,sum(p.p_qtystock) as purchase, sum(s.s_qtysold) as sold, (sum(p.p_qtystock)-sum(s.s_qtysold)) as stock,a.name as AuthorName from books b
+    left outer join (select distinct bookid, sum(quantity_sold) as s_qtysold from sales group by bookid ) s on  s.bookid= b.book_id
+   left outer join (select distinct bookid, sum(quantityinstock) as p_qtystock from purchase group by bookid ) p  on p.bookid= b.book_id
+   join authors a on a.author_id=b.author_id where b.book_id =:bookId
+   group by b.book_id,b.title, b.price, b.imageURL;
+    
+    `;
+
+    const results = await sequelize.query(query, {
+      replacements: { bookId: bookId }, // Bind bookId as a replacement in Sequelize query
+      type: sequelize.QueryTypes.SELECT,
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error("Error fetching stock data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;

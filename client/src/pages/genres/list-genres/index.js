@@ -11,12 +11,15 @@ import {
   ModalContent,
   ModalDescription,
   Icon,
-  Pagination,Header,Segment
+  Breadcrumb,
+  Pagination,
+  Header,
+  Segment,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
 import BookHeader from "../../../shared/Header";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -194,6 +197,16 @@ const Genreslist = () => {
     setFilteredGenres(genres);
   };
 
+  const sections = [
+    {
+      key: "Home",
+      content: "Home",
+      as: Link,
+      to: "http://localhost:3001/home",
+    },
+    { key: "Books", content: "Books", as: Link, to: "/books/menu" },
+    { key: "Author", content: "Genres", active: true },
+  ];
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -202,10 +215,9 @@ const Genreslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <BookHeader />
-            <Header as="h2">
-                 Genres
-                </Header>
-                  <div class="ui grid">
+            <Header as="h2">Genres</Header>
+            <Breadcrumb icon="right angle" sections={sections} />
+            <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
                   <button
@@ -233,21 +245,25 @@ const Genreslist = () => {
                 </div>
               </div>
             </div>
-            <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal closeIcon open={open} onClose={() => setOpen(false)}>
               <ModalHeader>
-               {selectedGenres ? "Edit Genres" : "Add New Genres"}
+                {selectedGenres ? "Edit Genres" : "Add New Genres"}
               </ModalHeader>
               <ModalContent>
                 <ModalDescription>
                   <Form onSubmit={handleSubmit}>
-                    <Form.Field>
+                    <Form.Field required>
+                      <label>Genres Name</label>
                       <input
                         placeholder="Enter Genres Name"
                         value={genresname}
                         onChange={(e) => setGenresName(e.target.value)}
                         error={
                           genresname.trim() === "" && genresNameClicked
-                            ? { content: "Please enter Genres name", pointing: "below" }
+                            ? {
+                                content: "Please enter Genres name",
+                                pointing: "below",
+                              }
                             : null
                         }
                       />
@@ -330,6 +346,7 @@ const Genreslist = () => {
                 </Table.Row>
               </Table.Footer>
               <Modal
+                closeIcon
                 open={confirmOpen}
                 onClose={() => setConfirmOpen(false)}
                 size="tiny"
@@ -353,7 +370,7 @@ const Genreslist = () => {
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

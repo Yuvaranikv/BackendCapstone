@@ -133,7 +133,7 @@ const HomePage = () => {
                     Books InStock
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">{item.total_stock}</CardHeader>
+                    <CardHeader align="center">{item.total_stock}&nbsp;&nbsp;<span>units</span></CardHeader>
                   </CardContent>
                 </Card>
               ))}
@@ -143,7 +143,7 @@ const HomePage = () => {
                     Books Sold Today
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">{item.BooksSoldToday}</CardHeader>
+                    <CardHeader align="center">{item.BooksSoldToday}&nbsp;&nbsp;<span>units</span></CardHeader>
                   </CardContent>
                 </Card>
               ))}
@@ -153,7 +153,7 @@ const HomePage = () => {
                     Today's Sales
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">{item.TotalSalesToday}</CardHeader>
+                    <CardHeader align="center"><Icon name="rupee sign"></Icon>{item.TotalSalesToday}</CardHeader>
                   </CardContent>
                 </Card>
               ))}
@@ -175,7 +175,7 @@ const HomePage = () => {
                   </CardContent>
                   <CardContent extra className="sold-number">
                     <a>
-                      <Icon name="user" />
+                      <Icon name="shopping cart" />
                       {item.total_quantity_sold} Sold
                     </a>
                   </CardContent>
@@ -194,8 +194,8 @@ const HomePage = () => {
                           <Icon name="warning circle" color="red" />
                           {item.title} -{" "}
                           {item.stock === null
-                            ? "Stock is empty"
-                            : `Only ${item.stock} left`}
+                            ? "(Stock is empty)"
+                            : `(Only ${item.stock} left)`}
                         </Segment>
                       </Grid.Column>
                     ))}

@@ -51,6 +51,10 @@ router.get('/all', async (req, res) => {
   try {
     const books = await Book.findAll({
       where: { isActive: true },
+      include: [
+        { model: Author, as: 'Author', attributes: ['name'] },
+        { model: Genres, as: 'Genres', attributes: ['genre_name'] }
+      ],
     });
 
     const totalBookCount = await Book.count();
@@ -91,7 +95,7 @@ router.post("/add", async (req, res) => {
   try {
     const { title, author_id, genre_id, price, publication_date, ISBN, imageURL, description } = req.body;
 
-    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN || !imageURL || !description) {
+    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN ) {
       return res.status(400).send("All fields are required");
     }
 
@@ -118,7 +122,7 @@ router.put("/edit/:id", async (req, res) => {
     const { id } = req.params;
     const { title, author_id, genre_id, price, publication_date, ISBN, imageURL, description } = req.body;
 
-    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN || !imageURL || !description) {
+    if (!title || !author_id || !genre_id || !price || !publication_date || !ISBN ) {
       return res.status(400).send("All fields are required");
     }
 
