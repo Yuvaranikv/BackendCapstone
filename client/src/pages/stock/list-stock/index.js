@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Grid, Header, Button, Icon, Label } from "semantic-ui-react";
+import { Table, Grid, Header, Button, Icon, Label,Modal,ModalHeader,ModalDescription,ModalContent } from "semantic-ui-react";
 import Navbar from "../../../shared/Navbar";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -17,6 +17,8 @@ const ListStock = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTextAuthor, setSearchTextAuthor] = useState("");
   const [searchTextBook, setSearchTextBook] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState(null);
 
   useEffect(() => {
     fetchStockData();
@@ -127,6 +129,23 @@ const ListStock = () => {
     );
   };
   
+  const handleInfoClick = (book) => {
+    setSelectedBook(book);
+    setConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setSelectedBook(null);
+  };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
 
   return (
     <div>
@@ -227,7 +246,7 @@ const ListStock = () => {
                       {getSoldBadgeAndCaption(item.stock)}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      <Icon name="info circle"></Icon>
+                    <Icon size="big" color="blue" name="info circle" onClick={() => handleInfoClick(item)} />
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -258,6 +277,38 @@ const ListStock = () => {
                 </Table.Row>
               </Table.Footer>
             </Table>
+            <Modal
+              closeIcon
+              open={confirmOpen}
+              onClose={handleCancelDelete}
+              size='mini'
+            >
+              <ModalHeader>Purchase and Sales Details</ModalHeader>
+              <ModalContent>
+                <ModalDescription>
+                  {selectedBook && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ textAlign: 'left' }}>
+                      <p><strong>Book Title:</strong></p>
+                      <p><strong>Author:</strong></p>
+                      <p><strong>Purchase Date:</strong></p>
+                      <p><strong>Sales Date:</strong></p>
+                      <p><strong>Sold Quantity:</strong></p>
+                      <p><strong>Purchased Quantity:</strong></p>
+                    </div>
+                    <div >
+                      <p>{selectedBook.title}</p>
+                      <p>{selectedBook.AuthorName}</p>
+                      <p>{formatDate(selectedBook.purchasedate)}</p>
+                      <p>{formatDate(selectedBook.salesdate)}</p>
+                      <p>{selectedBook.sold}</p>
+                      <p>{selectedBook.purchase}</p>
+                    </div>
+                  </div>
+                  )}
+                </ModalDescription>
+              </ModalContent>
+            </Modal>
           </Grid.Column>
         </Grid.Row>
       </Grid>
