@@ -221,7 +221,7 @@ const ListStock = () => {
                       {item.book_id}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      <img
+                      <img className="zoom-on-hover"
                         src={item.imageURL}
                         alt="Cover Page"
                         style={{ width: "50px", height: "70px" }}

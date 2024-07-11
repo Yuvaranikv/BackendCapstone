@@ -42,56 +42,56 @@ const BooksMenu = () => {
           <Grid.Column width={2} ></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            {/* <BookHeader /> */}
             <Header as="h2">Book</Header>
               <Card.Group itemsPerRow={3} centered>
               <Card onClick={handleBookCardClick} style={{ width: '20%' }}>
                   <Image src={bannerImage} wrapped ui={false} />
                   <CardContent>
                     <CardHeader>Add Book</CardHeader>
-                    <CardMeta>Joined in 2016</CardMeta>
+                    {/* <CardMeta>Joined in 2016</CardMeta>
                     <CardDescription>
                       Daniel is a comedian living in Nashville.
-                    </CardDescription>
+                    </CardDescription> */}
                   </CardContent>
-                  <CardContent extra>
+                  {/* <CardContent extra>
                     <a>
                       <Icon name="user" />
                       10 Friends
                     </a>
-                  </CardContent>
+                  </CardContent> */}
                 </Card>
                 <Card onClick={handleAuthorCardClick} style={{ width: '20%' }}>
                   <Image src={bannerImage1} wrapped ui={false} />
                   <CardContent>
                     <CardHeader>Add Author</CardHeader>
-                    <CardMeta>Joined in 2016</CardMeta>
+                    {/* <CardMeta>Joined in 2016</CardMeta>
                     <CardDescription>
                       Daniel is a comedian living in Nashville.
-                    </CardDescription>
+                    </CardDescription> */}
                   </CardContent>
-                  <CardContent extra>
+                  {/* <CardContent extra>
                     <a>
                       <Icon name="user" />
                       10 Friends
                     </a>
-                  </CardContent>
+                  </CardContent> */}
                 </Card>
                 <Card onClick={handleGenresCardClick} style={{ width: '20%' }}>
                   <Image src={bannerImage2} wrapped ui={false} />
                   <CardContent>
                     <CardHeader>Add Genres</CardHeader>
-                    <CardMeta>Joined in 2016</CardMeta>
+                    {/* <CardMeta>Joined in 2016</CardMeta>
                     <CardDescription>
                       Daniel is a comedian living in Nashville.
-                    </CardDescription>
+                    </CardDescription> */}
                   </CardContent>
-                  <CardContent extra>
+                  {/* <CardContent extra>
                     <a>
                       <Icon name="user" />
                       10 Friends
                     </a>
-                  </CardContent>
+                  </CardContent> */}
                 </Card>
               </Card.Group>
               </Grid.Column>

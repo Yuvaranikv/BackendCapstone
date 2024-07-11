@@ -31,7 +31,7 @@ const AuthorsList = () => {
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5); // Adjust based on your backend limit
+  const [pageSize, setPageSize] = useState(10); // Adjust based on your backend limit
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteAuthorId, setDeleteAuthorId] = useState(null);
@@ -201,11 +201,17 @@ const AuthorsList = () => {
 
   const handleSort = () => {
     const sortedAuthors = _.orderBy(
-      filteredAuthors,
+      allAuthors,
       ["name"],
       [direction === "ascending" ? "asc" : "desc"]
     );
-    setFilteredAuthors(sortedAuthors);
+     setAllAuthors(sortedAuthors);
+    // Update filteredAuthors based on pagination
+    const startIdx = (page - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+
+    setFilteredAuthors(sortedAuthors.slice(startIdx, endIdx));
+
     setDirection(direction === "ascending" ? "descending" : "ascending");
   };
 

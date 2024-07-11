@@ -319,6 +319,8 @@ const AddNewBook = () => {
     { key: "Author", content: "Add", active: true },
   ];
 
+  const today = new Date();
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -453,6 +455,7 @@ const AddNewBook = () => {
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Select Publication Date"
                         className="custom-datepicker"
+                        maxDate={today} // Disable future dates
                         error={
                           pdate === "" && addBookClicked
                             ? {

@@ -4,24 +4,32 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Button, Grid, Header, Segment } from "semantic-ui-react";
 import "./styles.css";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [loginClicked, setLoginClicked] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       const response = await axios.post("http://localhost:3000/userstest/", { username, password });
       console.log(response.data);
 
       if (response.status === 200) {
-        console.log("Redirecting to Add New Books page...");
+        console.log("Redirecting to home page...");
         navigate('/home');
-      }
+     }
+    
     } catch (error) {
-      console.error("Login error:", error); // Handle error response
+      console.error("Login error:", error); 
+      toast.error("Username and password not exists");
+      setUsername(""); // Clear username state
+      setPassword(""); // Clear password state
     }
   };
 
@@ -34,15 +42,29 @@ const LoginPage = () => {
           </Header>
           <Form size="large" onSubmit={handleSubmit}>
             <Segment stacked>
-              <Form.Input
+              <Form.Input required
                 fluid
                 icon="user"
                 iconPosition="left"
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+              //   error={
+              //     username.trim() === "" && loginClicked
+              //       ? {
+              //           content: "Please enter User name",
+              //           pointing: "below",
+              //         }
+              //       : null
+              //   }
+              // />
+              // {username.trim() === "" && loginClicked && (
+              //   <div className="ui pointing red basic label">
+              //     Please enter User name
+              //   </div>
+              // )}
               />
-              <Form.Input
+              <Form.Input required
                 fluid
                 icon="lock"
                 iconPosition="left"

@@ -161,7 +161,7 @@ const HomePage = () => {
             <Header as="h2">Top 5 selling books</Header>
             <Card.Group itemsPerRow={5}>
               {topsellingData.map((item) => (
-                <Card key={item.id} className="fixed-size-card">
+                <Card key={item.id} className="fixed-size-card zoom-on-hover">
                   <Image
                     src={item.imageURL}
                    
