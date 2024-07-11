@@ -110,7 +110,13 @@ router.post("/add", async (req, res) => {
       description,
     });
 
-    res.status(201).json(newBook);
+   // res.status(201).json(newBook);
+    // Fetch all books ordered by createdAt in descending order
+    const orderedBooks = await Book.findAll({
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.status(201).json(orderedBooks);
   } catch (err) {
     console.error("Error adding book:", err);
     res.status(500).send("Error adding book");

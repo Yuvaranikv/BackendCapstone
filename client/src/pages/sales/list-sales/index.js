@@ -30,7 +30,7 @@ const Saleslist = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteSaleId, setDeleteSaleId] = useState(null);
@@ -206,25 +206,25 @@ const Saleslist = () => {
     return pageNumbers;
   };
 
-  const handleSearch = (e) => {
-    setSearchText(e.target.value);
-    if (e.target.value === "") {
-      setFilteredSales(sales);
-    } else {
-      setFilteredSales(
-        sales.filter(
-          (sale) =>
-            sale.bookid.toString().includes(e.target.value) ||
-            sale.saledate.includes(e.target.value)
-        )
-      );
-    }
-  };
+  // const handleSearch = (e) => {
+  //   setSearchText(e.target.value);
+  //   if (e.target.value === "") {
+  //     setFilteredSales(sales);
+  //   } else {
+  //     setFilteredSales(
+  //       sales.filter(
+  //         (sale) =>
+  //           sale.bookid.toString().includes(e.target.value) ||
+  //           sale.saledate.includes(e.target.value)
+  //       )
+  //     );
+  //   }
+  // };
 
-  const handleResetSearch = () => {
-    setSearchText("");
-    setFilteredSales(sales);
-  };
+  // const handleResetSearch = () => {
+  //   setSearchText("");
+  //   setFilteredSales(sales);
+  // };
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-GB", {
@@ -257,7 +257,7 @@ const Saleslist = () => {
   const fetchQuantityInStock = async (bookId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/stock/1`
+        `http://localhost:3000/stock/${bookId}`
       );
       const data=response.data;
       console.log(response.data);
@@ -282,22 +282,28 @@ const Saleslist = () => {
  // Get today's date in the format YYYY-MM-DD
  const today = new Date().toISOString().split('T')[0];
 
- const handleSearchBook = (e) => {
+ const handleSearchBook = async (e) => {
   setSearchTextBook(e.target.value);
   if (e.target.value === "") {
     setFilteredSales(sales);
   } else {
-    const filteredBooks = allBooks.filter((book) =>
-      book.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/sales/books/search?title=${e.target.value}`
+      );
+      const filteredBooks = response.data;
+console.log(filteredBooks);
+      const filteredBookIds = filteredBooks.map((book) => book.book_id);
 
-    const filteredBookIds = filteredBooks.map((book) => book.book_id);
+      const newFilteredSales = sales.filter((sale) =>
+        filteredBookIds.includes(sale.bookid)
+      );
 
-    const newFilteredSales = sales.filter((sale) =>
-      filteredBookIds.includes(sale.bookid)
-    );
-
-    setFilteredSales(newFilteredSales);
+      setFilteredSales(newFilteredSales);
+    } catch (error) {
+      console.error("Error searching books:", error);
+      // Handle error appropriately
+    }
   }
 };
 
@@ -309,25 +315,7 @@ const Saleslist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <SalesHeader />
-            <Header as="h2" style={{marginBottom:-10}}> {selectedSale ? "Sales" : "Sales"}</Header>
-            <div class="ui grid">
-                <div class="three wide column right-aligned">
-                <div class="search-container">
-                  <div class="ui ">
-                    <div class="ui icon input">
-                      <input style={{marginBottom:10}}
-                        type="text"
-                        placeholder="Search Book"
-                        value={searchTextBook}
-                        onChange={handleSearchBook}
-                      />
-                      <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Header as="h2" style={{marginBottom:5}}> {selectedSale ? "Sales" : "Sales"}</Header>
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Form.Field width={4} className="margin-top" required>
@@ -429,6 +417,24 @@ const Saleslist = () => {
                 Clear
               </Button>
             </Form>
+            <div class="ui grid">
+                <div class="twe wide column right-aligned">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input style={{marginBottom:10}}
+                        type="text"
+                        placeholder="Search Book"
+                        value={searchTextBook}
+                        onChange={handleSearchBook}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Table className="ui very basic collapsing selectable celled table sortable">
               <Table.Header>
                 <Table.Row>

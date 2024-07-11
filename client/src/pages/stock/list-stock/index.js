@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Grid, Header, Button, Icon, Label,Modal,ModalHeader,ModalDescription,ModalContent } from "semantic-ui-react";
+import {
+  Table,
+  Grid,
+  Header,
+  Button,
+  Icon,
+  Label,
+  Modal,
+  ModalHeader,
+  ModalDescription,
+  ModalContent,
+} from "semantic-ui-react";
 import Navbar from "../../../shared/Navbar";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -19,6 +30,7 @@ const ListStock = () => {
   const [searchTextBook, setSearchTextBook] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [salesData, setSalesData] = useState([]);
 
   useEffect(() => {
     fetchStockData();
@@ -106,7 +118,7 @@ const ListStock = () => {
   const getSoldBadgeAndCaption = (stock) => {
     let color;
     let caption;
-  
+
     if (stock === null) {
       color = "red";
       caption = "Out of Stock";
@@ -120,17 +132,31 @@ const ListStock = () => {
       color = "red";
       caption = "Out of Stock";
     }
-  
+
     return (
-      <Label className="badge-sold" style={{ display: "flex", alignItems: "center", backgroundColor: 'transparent' }}>
-        <Icon name="square" size='big' color={color} style={{ marginRight: '5px' }} />&nbsp;&nbsp;
+      <Label
+        className="badge-sold"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "transparent",
+        }}
+      >
+        <Icon
+          name="square"
+          size="big"
+          color={color}
+          style={{ marginRight: "5px" }}
+        />
+        &nbsp;&nbsp;
         {caption}
       </Label>
     );
   };
-  
-  const handleInfoClick = (book) => {
+
+  const handleInfoClick = async (book) => {
     setSelectedBook(book);
+    await fetchSalesData(book.book_id);
     setConfirmOpen(true);
   };
 
@@ -145,6 +171,17 @@ const ListStock = () => {
       month: "2-digit",
       year: "numeric",
     }).format(date);
+  };
+  const fetchSalesData = async (bookId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/stock/book/${bookId}/sales`
+      );
+      setSalesData(response.data);
+      console.log(salesData);
+    } catch (error) {
+      console.error("Error fetching sales data:", error);
+    }
   };
 
   return (
@@ -221,7 +258,8 @@ const ListStock = () => {
                       {item.book_id}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      <img className="zoom-on-hover"
+                      <img
+                        className="zoom-on-hover"
                         src={item.imageURL}
                         alt="Cover Page"
                         style={{ width: "50px", height: "70px" }}
@@ -234,19 +272,24 @@ const ListStock = () => {
                       {item.AuthorName}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                    {item.purchase !== null ? item.purchase : 0}
+                      {item.purchase !== null ? item.purchase : 0}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                    {item.sold !== null ? item.sold : 0}
+                      {item.sold !== null ? item.sold : 0}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                    {item.stock !== null ? item.stock : 0}
+                      {item.stock !== null ? item.stock : 0}
                     </Table.Cell>
                     <Table.Cell style={{ width: "130px" }}>
                       {getSoldBadgeAndCaption(item.stock)}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                    <Icon size="big" color="blue" name="info circle" onClick={() => handleInfoClick(item)} />
+                      <Icon
+                        size="big"
+                        color="blue"
+                        name="info circle"
+                        onClick={() => handleInfoClick(item)}
+                      />
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -277,37 +320,37 @@ const ListStock = () => {
                 </Table.Row>
               </Table.Footer>
             </Table>
-            <Modal
-              closeIcon
-              open={confirmOpen}
-              onClose={handleCancelDelete}
-              size='mini'
-            >
-              <ModalHeader>Purchase and Sales Details</ModalHeader>
-              <ModalContent>
-                <ModalDescription>
-                  {selectedBook && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ textAlign: 'left' }}>
-                      <p><strong>Book Title:</strong></p>
-                      <p><strong>Author:</strong></p>
-                      <p><strong>Purchase Date:</strong></p>
-                      <p><strong>Sales Date:</strong></p>
-                      <p><strong>Sold Quantity:</strong></p>
-                      <p><strong>Purchased Quantity:</strong></p>
-                    </div>
-                    <div >
-                      <p>{selectedBook.title}</p>
-                      <p>{selectedBook.AuthorName}</p>
-                      <p>{formatDate(selectedBook.purchasedate)}</p>
-                      <p>{formatDate(selectedBook.salesdate)}</p>
-                      <p>{selectedBook.sold}</p>
-                      <p>{selectedBook.purchase}</p>
-                    </div>
-                  </div>
-                  )}
-                </ModalDescription>
-              </ModalContent>
+            <Modal open={confirmOpen} onClose={handleCancelDelete}>
+              <Modal.Header>Sales Data for {selectedBook?.title}</Modal.Header>
+              <Modal.Content>
+                {salesData.length > 0 ? (
+                  <Table celled>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell>Sales ID</Table.HeaderCell>
+                        <Table.HeaderCell>Sales Date</Table.HeaderCell>
+                        <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
+                        <Table.HeaderCell>Comments</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                      {salesData.map((sale) => (
+                        <Table.Row key={sale.salesid}>
+                          <Table.Cell>{sale.salesid}</Table.Cell>
+                          <Table.Cell>{formatDate(sale.salesdate)}</Table.Cell>
+                          <Table.Cell>{sale.quantity_sold}</Table.Cell>
+                          <Table.Cell>{sale.comments}</Table.Cell>
+                        </Table.Row>
+                      ))}
+                    </Table.Body>
+                  </Table>
+                ) : (
+                  <p>No sales data available for this book.</p>
+                )}
+              </Modal.Content>
+              <Modal.Actions>
+                <Button onClick={handleCancelDelete}>Close</Button>
+              </Modal.Actions>
             </Modal>
           </Grid.Column>
         </Grid.Row>

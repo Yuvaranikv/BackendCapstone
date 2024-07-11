@@ -15,27 +15,26 @@ router.get('/all', async (req, res) => {
   }
 });
 
+// GET paginated purchases with books included
 router.get('/', async (req, res) => {
   const page = parseInt(req.query.page) || 1;  // Default to page 1 if not provided
   const limit = parseInt(req.query.limit) || 10; // Default limit to 10 items per page
 
   try {
     const offset = (page - 1) * limit;
-    const purchases = await Purchase.findAll({
+    const purchases = await Purchase.findAndCountAll({
       where: { isActive: true },
+      include: [{ model: Book, attributes: ['title'] }],
       offset: offset,
       limit: limit,
-      include: [{ model: Book, attributes: ['title'] }],
     });
-
-    const totalPurchaseCount = await Purchase.count();
 
     res.json({
-      purchases: purchases,
-      totalCount: totalPurchaseCount
+      purchases: purchases.rows,
+      totalCount: purchases.count
     });
   } catch (err) {
-    console.error('Error retrieving purchases', err);
+    console.error('Error retrieving purchases:', err);
     res.status(500).send('Error retrieving purchases');
   }
 });
@@ -109,5 +108,6 @@ router.delete('/delete/:id', async (req, res) => {
     res.status(500).send('Error deleting purchase');
   }
 });
+
 
 module.exports = router;

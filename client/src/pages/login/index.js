@@ -24,12 +24,13 @@ const LoginPage = () => {
         console.log("Redirecting to home page...");
         navigate('/home');
      }
-    
+     else
+     toast.error("Username and password not exists");
     } catch (error) {
       console.error("Login error:", error); 
       toast.error("Username and password not exists");
-      setUsername(""); // Clear username state
-      setPassword(""); // Clear password state
+      // setUsername(""); // Clear username state
+      // setPassword(""); // Clear password state
     }
   };
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const Sales = require('../models/Sales');
 const Book=require('../models/Book');
+const { Op } = require('sequelize');
 
 const router = express.Router();
 
@@ -129,6 +130,26 @@ router.delete('/delete/:id', async (req, res) => {
   } catch (err) {
     console.error('Error deleting sale', err);
     res.status(500).send('Error deleting sale');
+  }
+});
+
+// Endpoint to search for books by title
+router.get('/books/search', async (req, res) => {
+  const { title } = req.query;
+
+  try {
+    const books = await Book.findAll({
+      where: {
+        title: {
+          [Op.like]: `%${title}%` // Searching for titles containing the query string
+        }
+      }
+    });
+
+    res.json(books);
+  } catch (err) {
+    console.error('Error searching books by title', err);
+    res.status(500).send('Error searching books by title');
   }
 });
 

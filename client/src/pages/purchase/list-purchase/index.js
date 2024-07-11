@@ -9,14 +9,16 @@ import {
   Icon,
   Pagination,
   Dropdown,
-  Header,Modal, ModalHeader,
+  Header,
+  Modal,
+  ModalHeader,
   ModalContent,
   ModalDescription,
 } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import Navbar from "../../../shared/Navbar";
 // import BookHeader from "../../../shared/Header";
-import {Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
@@ -30,7 +32,7 @@ const Purchaselist = () => {
   const [comments, setComments] = useState("");
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
   const [filteredPurchases, setFilteredPurchases] = useState([]);
@@ -43,7 +45,6 @@ const Purchaselist = () => {
   const [searchTextBook, setSearchTextBook] = useState("");
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [books, setBooks] = useState([]);
-
 
   useEffect(() => {
     fetchPurchases();
@@ -77,10 +78,10 @@ const Purchaselist = () => {
     e.preventDefault();
     setPurchaseClicked(true);
     // Validation checks
-  // if (!selectedBookId || !quantityInStock || !purchaseDate) {
-  //   toast.error("Please fill all required fields before submitting.");
-  //   return;
-  // }
+    // if (!selectedBookId || !quantityInStock || !purchaseDate) {
+    //   toast.error("Please fill all required fields before submitting.");
+    //   return;
+    // }
     const payload = {
       bookid: selectedBookId,
       quantityinstock: quantityInStock,
@@ -218,33 +219,42 @@ const Purchaselist = () => {
   };
 
   const sections = [
-    { key: "Home", content: "Home", as: Link, to: "http://localhost:3001/home" },
+    {
+      key: "Home",
+      content: "Home",
+      as: Link,
+      to: "http://localhost:3001/home",
+    },
     { key: "Books", content: "Books", as: Link, to: "/books/menu" },
     { key: "Author", content: "Author", active: true },
   ];
- // Get today's date in the format YYYY-MM-DD
- const today = new Date().toISOString().split('T')[0];
- console.log(today);
+  // Get today's date in the format YYYY-MM-DD
+  const today = new Date().toISOString().split("T")[0];
+  console.log(today);
 
- const handleSearchBook = (e) => {
-  setSearchTextBook(e.target.value);
-  if (e.target.value === "") {
-    setFilteredPurchases(purchases);
-  } else {
-    const filteredBooks = allBooks.filter((book) =>
-      book.title.toLowerCase().includes(e.target.value.toLowerCase())
-    );
-
-    const filteredBookIds = filteredBooks.map((book) => book.book_id);
-
-    const newFilteredPurchases = purchases.filter((purchase) =>
-      filteredBookIds.includes(purchase.bookid)
-    );
-
-    setFilteredPurchases(newFilteredPurchases);
-  }
-};
-
+  const handleSearchBook = (e) => {
+    const searchText = e.target.value.toLowerCase().trim();
+    setSearchTextBook(searchText); // Update search text state
+  
+    if (searchText === "") {
+      setFilteredPurchases(purchases); // Reset to all purchases if search text is empty
+    } else {
+      const filteredBooks = allBooks.filter((book) =>
+        book.title.toLowerCase().includes(searchText)
+      );
+      console.log("Filtered Books:", filteredBooks);
+  
+      const filteredBookIds = filteredBooks.map((book) => book.book_id);
+      console.log("Filtered Book IDs:", filteredBookIds);
+  
+      const newFilteredPurchases = purchases.filter((purchase) =>
+        filteredBookIds.includes(purchase.bookid)
+      );
+      console.log("Filtered Purchases:", newFilteredPurchases);
+  
+      setFilteredPurchases(newFilteredPurchases);
+    }
+  };
 
   return (
     <div>
@@ -254,29 +264,14 @@ const Purchaselist = () => {
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
             <PurchaseHeader />
-            <Header as='h2'style={{marginBottom:-10}}> {selectedPurchase ? "Purchase" : "Purchase"}</Header>
-            <div class="ui grid">
-                <div class="three wide column right-aligned">
-                <div class="search-container">
-                  <div class="ui ">
-                    <div class="ui icon input">
-                      <input style={{marginBottom:10}}
-                        type="text"
-                        placeholder="Search Book"
-                        value={searchTextBook}
-                        onChange={handleSearchBook}
-                      />
-                      <i class="search icon"></i>
-                    </div>
-                    <div class="results"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Header as="h2" style={{ marginBottom: 5 }}>
+              {" "}
+              {selectedPurchase ? "Purchase" : "Purchase"}
+            </Header>
             <Form onSubmit={handleSubmit}>
-                <Form.Group>
+              <Form.Group>
                 <Form.Field width={4} className="margin-top" required>
-                <label>Book</label>
+                  <label>Book</label>
                   <Dropdown
                     placeholder="Select Book"
                     fluid
@@ -297,21 +292,26 @@ const Purchaselist = () => {
                         : null
                     }
                   />
-                  {selectedBookId=== null && purchaseClicked && (
-                        <div className="ui pointing red basic label">
-                          Please select a Book
-                        </div>
-                      )}
+                  {selectedBookId === null && purchaseClicked && (
+                    <div className="ui pointing red basic label">
+                      Please select a Book
+                    </div>
+                  )}
                 </Form.Field>
                 <Form.Field width={4} className="margin-top" required>
-                <label>Quantity in Stock</label>
-                  <Input type="number"
+                  <label>Quantity in Stock</label>
+                  <Input
+                    type="number"
                     placeholder="Enter Quantity in Stock"
                     value={quantityInStock}
                     onChange={(e) => setQuantityInStock(e.target.value)}
                     error={
                       quantityInStock === "" && purchaseClicked
-                        ? { content: "Please enter Quantity in Stock in numbers", pointing: "below" }
+                        ? {
+                            content:
+                              "Please enter Quantity in Stock in numbers",
+                            pointing: "below",
+                          }
                         : null
                     }
                   />
@@ -322,7 +322,7 @@ const Purchaselist = () => {
                   )}
                 </Form.Field>
                 <Form.Field width={4} className="margin-top" required>
-                <label>Purchase Date</label>
+                  <label>Purchase Date</label>
                   <Input
                     type="date"
                     placeholder="Enter Purchase Date"
@@ -345,9 +345,10 @@ const Purchaselist = () => {
                   )}
                 </Form.Field>
               </Form.Group>
-                <Form.Field width={12}   >
+              <Form.Field width={12}>
                 <label>Comments</label>
-                <textarea className="custom-textarea"
+                <textarea
+                  className="custom-textarea"
                   placeholder="Enter Comments"
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
@@ -356,10 +357,29 @@ const Purchaselist = () => {
               <Button color="black" type="submit">
                 {selectedPurchase ? "Update" : "Add"}
               </Button>
-              <Button color="black" type="button" onClick={resetForm} >
-              Clear 
+              <Button color="black" type="button" onClick={resetForm}>
+                Clear
               </Button>
             </Form>
+            <div class="ui grid">
+              <div class="twee wide column">
+                <div class="search-container">
+                  <div class="ui ">
+                    <div class="ui icon input">
+                      <input
+                        style={{ marginBottom: 10 }}
+                        type="text"
+                        placeholder="Search Book"
+                        value={searchTextBook}
+                        onChange={handleSearchBook}
+                      />
+                      <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Table className="ui very basic collapsing selectable celled table sortable">
               <Table.Header>
                 <Table.Row>
@@ -376,7 +396,9 @@ const Purchaselist = () => {
                 {filteredPurchases.map((purchase, index) => (
                   <Table.Row key={purchase.purchaseid}>
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>
-                    <Table.Cell>{purchase.Book ? purchase.Book.title : 'N/A'}</Table.Cell>
+                    <Table.Cell>
+                      {purchase.Book ? purchase.Book.title : "N/A"}
+                    </Table.Cell>
                     <Table.Cell>{purchase.quantityinstock}</Table.Cell>
                     <Table.Cell>{formatDate(purchase.purchasedate)}</Table.Cell>
                     <Table.Cell>{purchase.comments}</Table.Cell>
@@ -429,7 +451,7 @@ const Purchaselist = () => {
                 </Table.Row>
               </Table.Footer>
               <Modal
-               closeIcon
+                closeIcon
                 open={confirmOpen}
                 onClose={() => setConfirmOpen(false)}
                 size="tiny"
@@ -450,7 +472,6 @@ const Purchaselist = () => {
                 </Modal.Actions>
               </Modal>
             </Table>
-            
           </Grid.Column>
         </Grid.Row>
       </Grid>
