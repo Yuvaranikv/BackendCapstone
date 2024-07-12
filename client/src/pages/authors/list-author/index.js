@@ -205,7 +205,7 @@ const AuthorsList = () => {
       ["name"],
       [direction === "ascending" ? "asc" : "desc"]
     );
-     setAllAuthors(sortedAuthors);
+    setAllAuthors(sortedAuthors);
     // Update filteredAuthors based on pagination
     const startIdx = (page - 1) * pageSize;
     const endIdx = startIdx + pageSize;
@@ -234,8 +234,8 @@ const AuthorsList = () => {
             {" "}
           </Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            <Navbar />
-            <BookHeader />
+            {/* <Navbar />
+            <BookHeader /> */}
             <Header as="h2">Author</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
@@ -295,7 +295,7 @@ const AuthorsList = () => {
                       )}
                     </Form.Field>
                     <Form.Field>
-                    <label>Biography</label>
+                      <label>Biography</label>
                       <TextArea
                         placeholder="Enter Biography"
                         value={biography}

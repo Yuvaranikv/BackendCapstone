@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
     const offset = (page - 1) * limit;
     const authors = await Author.findAll({
       where: { isActive: true },
+      order: [['createdAt', 'DESC']],
       offset: offset,
       limit: limit,
     });
