@@ -31,6 +31,8 @@ const ListStock = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null);
   const [salesData, setSalesData] = useState([]);
+  const [purchaseData, setPurchaseData] = useState([]);
+  const [modalContent, setModalContent] = useState("sales");
 
   useEffect(() => {
     fetchStockData();
@@ -157,6 +159,14 @@ const ListStock = () => {
   const handleInfoClick = async (book) => {
     setSelectedBook(book);
     await fetchSalesData(book.book_id);
+    setModalContent("sales"); // set modal content to sales
+    setConfirmOpen(true);
+  };
+
+  const handleInfoClickPurchase = async (book) => {
+    setSelectedBook(book);
+    await fetchPurchaseData(book.book_id);
+    setModalContent("purchase"); // set modal content to purchase
     setConfirmOpen(true);
   };
 
@@ -184,14 +194,26 @@ const ListStock = () => {
     }
   };
 
+  const fetchPurchaseData = async (bookId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/stock/book/${bookId}/purchase`
+      );
+      setPurchaseData(response.data);
+      console.log(salesData);
+    } catch (error) {
+      console.error("Error fetching purchase data:", error);
+    }
+  };
+
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
         <Grid.Row style={{ padding: 0 }}>
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            <Navbar />
-            <StockHeader />
+            {/* <Navbar />
+            <StockHeader /> */}
             <Header as="h2">Stock</Header>
             <Grid>
               <Grid.Row columns={3} verticalAlign="middle">
@@ -273,9 +295,23 @@ const ListStock = () => {
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
                       {item.purchase !== null ? item.purchase : 0}
+                      <Icon
+                        size="small"
+                        color="blue"
+                        name="info circle"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => handleInfoClickPurchase(item) }
+                      />
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
                       {item.sold !== null ? item.sold : 0}
+                      <Icon
+                        size="small"
+                        color="blue"
+                        name="info circle"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => handleInfoClick(item) }
+                      />
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
                       {item.stock !== null ? item.stock : 0}
@@ -284,12 +320,7 @@ const ListStock = () => {
                       {getSoldBadgeAndCaption(item.stock)}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      <Icon
-                        size="big"
-                        color="blue"
-                        name="info circle"
-                        onClick={() => handleInfoClick(item)}
-                      />
+                     
                     </Table.Cell>
                   </Table.Row>
                 ))}
@@ -320,14 +351,23 @@ const ListStock = () => {
                 </Table.Row>
               </Table.Footer>
             </Table>
-            <Modal open={confirmOpen} onClose={handleCancelDelete}>
-              <Modal.Header>Sales Data for {selectedBook?.title}</Modal.Header>
-              <Modal.Content>
-                {salesData.length > 0 ? (
+            <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        size="small"
+      >
+        <ModalHeader>Book Information</ModalHeader>
+        <ModalContent>
+          {selectedBook && (
+            <div>
+              <h3>{selectedBook.title}</h3>
+              <p>Author: {selectedBook.AuthorName}</p>
+              {modalContent === "sales" ? (
+                salesData.length > 0 ? (
                   <Table celled>
                     <Table.Header>
                       <Table.Row>
-                        <Table.HeaderCell>Sales ID</Table.HeaderCell>
+                      <Table.HeaderCell>Sales ID</Table.HeaderCell>
                         <Table.HeaderCell>Sales Date</Table.HeaderCell>
                         <Table.HeaderCell>Quantity Sold</Table.HeaderCell>
                         <Table.HeaderCell>Comments</Table.HeaderCell>
@@ -335,9 +375,9 @@ const ListStock = () => {
                     </Table.Header>
                     <Table.Body>
                       {salesData.map((sale) => (
-                        <Table.Row key={sale.salesid}>
+                          <Table.Row key={sale.salesid}>
                           <Table.Cell>{sale.salesid}</Table.Cell>
-                          <Table.Cell>{formatDate(sale.salesdate)}</Table.Cell>
+                          <Table.Cell>{(sale.salesdate)}</Table.Cell>
                           <Table.Cell>{sale.quantity_sold}</Table.Cell>
                           <Table.Cell>{sale.comments}</Table.Cell>
                         </Table.Row>
@@ -345,13 +385,40 @@ const ListStock = () => {
                     </Table.Body>
                   </Table>
                 ) : (
-                  <p>No sales data available for this book.</p>
-                )}
-              </Modal.Content>
-              <Modal.Actions>
-                <Button onClick={handleCancelDelete}>Close</Button>
-              </Modal.Actions>
-            </Modal>
+                  <p>No sales data found.</p>
+                )
+              ) : purchaseData.length > 0 ? (
+                <Table celled>
+                  <Table.Header>
+                    <Table.Row>
+                    <Table.HeaderCell>Purchase ID</Table.HeaderCell>
+                        <Table.HeaderCell>Purchase Date</Table.HeaderCell>
+                        <Table.HeaderCell>Quantity Purchased</Table.HeaderCell>
+                        <Table.HeaderCell>Comments</Table.HeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {purchaseData.map((data) => (
+                      <Table.Row key={data.purchaseid}>
+                      <Table.Cell>{data.purchaseid}</Table.Cell>
+                      <Table.Cell>{data.purchasedate}</Table.Cell>
+                      <Table.Cell>{data.quantityinstock}</Table.Cell>
+                      <Table.Cell>{(data.comments)}</Table.Cell>
+                    </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              ) : (
+                <p>No purchase data found.</p>
+              )}
+            </div>
+          )}
+        </ModalContent>
+        <Modal.Actions>
+          <Button onClick={() => setConfirmOpen(false)}>Close</Button>
+        </Modal.Actions>
+      </Modal>
+         
           </Grid.Column>
         </Grid.Row>
       </Grid>

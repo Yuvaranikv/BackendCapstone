@@ -181,4 +181,21 @@ router.get('/book/:bookId/sales', async (req, res) => {
     res.status(500).send('Error retrieving sales data');
   }
 });
+
+// New endpoint to fetch sales data for a specific book
+router.get('/book/:bookId/purchase', async (req, res) => {
+  const { bookId } = req.params;
+
+  try {
+    const purchase = await Purchase.findAll({
+      where: { bookid: bookId, isActive: true },
+      include: [{ model: Book, attributes: ['title'] }],
+    });
+
+    res.json(purchase);
+  } catch (err) {
+    console.error('Error retrieving purchase data for book', err);
+    res.status(500).send('Error retrieving purchase data');
+  }
+});
 module.exports = router;
