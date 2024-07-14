@@ -38,7 +38,7 @@ const AuthorsList = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filteredAuthors, setFilteredAuthors] = useState([]);
-  const [direction, setDirection] = useState(null);
+  const [direction, setDirection] = useState("descending");
   const [allAuthors, setAllAuthors] = useState([]);
   const [authorNameClicked, setAuthorNameClicked] = useState(false);
 
@@ -49,7 +49,7 @@ const AuthorsList = () => {
 
   const fetchAllAuthors = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/authors/all`);
+      const response = await axios.get(`http://localhost:3000/authors/all?direction=${direction}`);
       setAllAuthors(response.data.authors);
     } catch (error) {
       console.error("Error fetching all authors:", error);
@@ -59,11 +59,11 @@ const AuthorsList = () => {
   const fetchAuthors = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/authors?page=${page}&limit=${pageSize}`
+        `http://localhost:3000/authors?page=${page}&limit=${pageSize}&direction=${direction}`
       );
-
+  
       const { authors, totalCount } = response.data;
-
+  
       setAuthors(authors);
       setFilteredAuthors(authors);
       const totalPagesCount = Math.ceil(totalCount / pageSize);
@@ -72,6 +72,7 @@ const AuthorsList = () => {
       console.error("Error fetching authors:", error);
     }
   };
+  
 
   const handleNextPage = () => {
     setPage(page + 1);
@@ -199,21 +200,29 @@ const AuthorsList = () => {
     setFilteredAuthors(authors);
   };
 
-  const handleSort = () => {
-    const sortedAuthors = _.orderBy(
-      allAuthors,
-      ["name"],
-      [direction === "ascending" ? "asc" : "desc"]
-    );
-    setAllAuthors(sortedAuthors);
-    // Update filteredAuthors based on pagination
-    const startIdx = (page - 1) * pageSize;
-    const endIdx = startIdx + pageSize;
-
-    setFilteredAuthors(sortedAuthors.slice(startIdx, endIdx));
-
-    setDirection(direction === "ascending" ? "descending" : "ascending");
+  const handleSort = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/authors/all/sort?direction=${direction === "ascending" ? "ascend" : "descend"}`);
+      console.log(direction);
+      const { authors, totalCount } = response.data;
+  
+      setAllAuthors(authors);
+      const totalPagesCount = Math.ceil(totalCount / pageSize);
+      setTotalPages(totalPagesCount);
+      console.log(allAuthors);
+      // Update filteredAuthors based on pagination
+       const startIdx = (page - 1) * pageSize;
+      const endIdx = startIdx + pageSize;
+       setFilteredAuthors(allAuthors.slice(startIdx, endIdx));
+     // setFilteredAuthors(authors);
+      console.log(filteredAuthors);
+      
+      setDirection(direction === "ascending" ? "descending" : "ascending");
+    } catch (error) {
+      console.error("Error fetching sorted authors:", error);
+    }
   };
+  
 
   const sections = [
     {
@@ -234,8 +243,8 @@ const AuthorsList = () => {
             {" "}
           </Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            {/* <Navbar />
-            <BookHeader /> */}
+             <Navbar />
+            <BookHeader /> 
             <Header as="h2">Author</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
@@ -253,13 +262,13 @@ const AuthorsList = () => {
                 <div class="search-container">
                   <div class="ui ">
                     <div class="ui icon input">
-                      <input
+                      <input style={{borderColor:'orange'}}
                         type="text"
                         placeholder="Search Author"
                         value={searchText}
                         onChange={handleSearch}
                       />
-                      <i class="search icon"></i>
+                      <i class="search icon" style={{backgroundColor:'orange'}}  ></i>
                     </div>
                     <div class="results"></div>
                   </div>
@@ -313,7 +322,7 @@ const AuthorsList = () => {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Sl. No</Table.HeaderCell>
-                  <Table.HeaderCell sorted={direction} onClick={handleSort}>
+                  <Table.HeaderCell >
                     Author
                   </Table.HeaderCell>
                   <Table.HeaderCell>Biography</Table.HeaderCell>

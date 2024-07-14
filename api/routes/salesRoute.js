@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
     const offset = (page - 1) * limit;
     const sales = await Sales.findAll({
       where: { isActive: true },
+      order: [['createdAt', 'DESC']],
       offset: offset,
       limit: limit,
       include: [{ model: Book, attributes: ['title'] }],

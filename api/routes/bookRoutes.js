@@ -27,6 +27,7 @@ router.get("/", async (req, res) => {
     const offset = (page - 1) * limit;
     const books = await Book.findAll({
       where: { isActive: true },
+      order: [['createdAt', 'DESC']],
       offset: offset,
       limit: limit,
       include: [
@@ -164,8 +165,10 @@ router.delete("/delete/:id", async (req, res) => {
       return res.status(404).send("Book not found");
     }
 
-    await book.destroy();
-    res.send("Book deleted successfully");
+    book.isActive = false;
+    await book.save();
+
+    res.send("Book deactivated successfully");
   } catch (err) {
     console.error("Error deleting book:", err);
     res.status(500).send("Error deleting book");

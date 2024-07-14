@@ -9,9 +9,9 @@ router.get("/", async (req, res) => {
   try {
     const query = `
     select distinct b.book_id, b.title, b.price, b.imageURL,sum(p.p_qtystock) as purchase, sum(s.s_qtysold) as sold, (sum(p.p_qtystock)-sum(s.s_qtysold)) as stock,a.name as AuthorName from books b
-    left outer join (select distinct bookid, sum(quantity_sold) as s_qtysold from sales group by bookid,salesdate ) s on  s.bookid= b.book_id
-   left outer join (select distinct bookid, sum(quantityinstock) as p_qtystock from purchase group by bookid,purchasedate ) p  on p.bookid= b.book_id
-   join authors a on a.author_id=b.author_id
+    left outer join (select distinct bookid, sum(quantity_sold) as s_qtysold from sales where sales.isActive=1 group by bookid ) s on  s.bookid= b.book_id
+   left outer join (select distinct bookid, sum(quantityinstock) as p_qtystock from purchase where purchase.isActive=1 group by bookid ) p  on p.bookid= b.book_id
+   join authors a on a.author_id=b.author_id where b.isActive=1
    group by b.book_id,b.title, b.price, b.imageURL;
     
     `;

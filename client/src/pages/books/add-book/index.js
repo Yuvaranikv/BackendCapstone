@@ -346,13 +346,13 @@ const AddNewBook = () => {
                 <div class="search-container">
                   <div class="ui ">
                     <div class="ui icon input">
-                      <input
+                      <input style={{borderColor:'orange'}}
                         type="text"
                         placeholder="Search Book"
                         value={searchText}
                         onChange={handleSearch}
                       />
-                      <i class="search icon"></i>
+                      <i class="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                     <div class="results"></div>
                   </div>
@@ -549,6 +549,7 @@ const AddNewBook = () => {
                   <Table.HeaderCell sorted={direction} onClick={handleSort}>
                     Book
                   </Table.HeaderCell>
+                  <Table.HeaderCell>Cover Page</Table.HeaderCell>
                   <Table.HeaderCell>Author</Table.HeaderCell>
                   <Table.HeaderCell>Genres</Table.HeaderCell>
                   <Table.HeaderCell>Price</Table.HeaderCell>
@@ -563,6 +564,14 @@ const AddNewBook = () => {
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
                     {/* Display serial number */}
                     <Table.Cell>{book.title}</Table.Cell>
+                    <Table.Cell style={{ width: "100px" }}>
+                      <img
+                        className="zoom-on-hover"
+                        src={book.imageURL}
+                        alt="Cover Page"
+                        style={{ width: "50px", height: "70px" }}
+                      />
+                    </Table.Cell>
                     <Table.Cell>{book.Author?.name}</Table.Cell>{" "}
                     {/* Optional chaining here */}
                     <Table.Cell>{book.Genres?.genre_name}</Table.Cell>{" "}

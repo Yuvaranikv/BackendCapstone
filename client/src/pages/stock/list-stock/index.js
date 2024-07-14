@@ -212,40 +212,40 @@ const ListStock = () => {
         <Grid.Row style={{ padding: 0 }}>
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            {/* <Navbar />
-            <StockHeader /> */}
+            <Navbar />
+            <StockHeader /> 
             <Header as="h2">Stock</Header>
             <Grid>
               <Grid.Row columns={3} verticalAlign="middle">
                 <Grid.Column>
                   <div className="ui">
                     <label>
-                      Select Author: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      Search Author: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </label>
                     <div className="ui icon input">
-                      <input
+                      <input style={{borderColor:'orange'}}
                         type="text"
                         placeholder="Search Author"
                         value={searchTextAuthor}
                         onChange={(e) => setSearchTextAuthor(e.target.value)}
                       />
-                      <i className="search icon"></i>
+                      <i className="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                   </div>
                 </Grid.Column>
                 <Grid.Column>
                   <div className="ui">
                     <label>
-                      Select Book: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      Search Book: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </label>
                     <div className="ui icon input">
-                      <input
+                      <input style={{borderColor:'orange'}}
                         type="text"
                         placeholder="Search Book"
                         value={searchTextBook}
                         onChange={(e) => setSearchTextBook(e.target.value)}
                       />
-                      <i className="search icon"></i>
+                      <i className="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                   </div>
                 </Grid.Column>
@@ -270,7 +270,7 @@ const ListStock = () => {
                   <Table.HeaderCell>Sold</Table.HeaderCell>
                   <Table.HeaderCell>Stock</Table.HeaderCell>
                   <Table.HeaderCell>Info</Table.HeaderCell>
-                  <Table.HeaderCell>View More</Table.HeaderCell>
+                 
                 </Table.Row>
               </Table.Header>
               <Table.Body>
@@ -294,24 +294,33 @@ const ListStock = () => {
                       {item.AuthorName}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      {item.purchase !== null ? item.purchase : 0}
-                      <Icon
+                    <a
+                        href="#"
+                        onClick={() => handleInfoClickPurchase(item)}
+                      >
+                        {item.purchase !== null ? item.purchase : 0}
+                      </a>
+                      {/* {item.purchase !== null ? item.purchase : 0} */}
+                      {/* <Icon
                         size="small"
                         color="blue"
                         name="info circle"
                         style={{ marginLeft: "10px" }}
                         onClick={() => handleInfoClickPurchase(item) }
-                      />
+                      /> */}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
-                      {item.sold !== null ? item.sold : 0}
-                      <Icon
+                    <a href="#"   onClick={() => handleInfoClick(item)}>
+                    {item.sold !== null ? item.sold : 0}
+                      </a>
+                     
+                      {/* <Icon
                         size="small"
                         color="blue"
                         name="info circle"
                         style={{ marginLeft: "10px" }}
                         onClick={() => handleInfoClick(item) }
-                      />
+                      /> */}
                     </Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
                       {item.stock !== null ? item.stock : 0}
@@ -319,9 +328,7 @@ const ListStock = () => {
                     <Table.Cell style={{ width: "130px" }}>
                       {getSoldBadgeAndCaption(item.stock)}
                     </Table.Cell>
-                    <Table.Cell style={{ width: "100px" }}>
-                     
-                    </Table.Cell>
+                    
                   </Table.Row>
                 ))}
               </Table.Body>

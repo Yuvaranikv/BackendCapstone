@@ -24,6 +24,7 @@ router.get('/', async (req, res) => {
     const offset = (page - 1) * limit;
     const purchases = await Purchase.findAndCountAll({
       where: { isActive: true },
+      order: [['createdAt', 'DESC']],
       include: [{ model: Book, attributes: ['title'] }],
       offset: offset,
       limit: limit,

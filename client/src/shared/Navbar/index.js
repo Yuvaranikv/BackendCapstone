@@ -27,22 +27,22 @@ const Navbar = () => {
       className="sidebar-menu"
     >
       <div className="menu-content">
-        {/* <Menu.Item as={NavLink} to="/home" activeClassName="active">
+        <Menu.Item as={NavLink} to="/home" activeClassName="active">
           <Icon name="home" />
           Home
-        </Menu.Item> */}
+        </Menu.Item> 
         <Menu.Item as={NavLink} to="/books/menu" activeClassName="active">
           <Icon name="book" />
           Books
         </Menu.Item>
-        {/* <Menu.Item as={NavLink} to="/purchase/list" activeClassName="active">
+        <Menu.Item as={NavLink} to="/purchase/list" activeClassName="active">
           <Icon name="plus cart" />
           Purchase
         </Menu.Item>
         <Menu.Item as={NavLink} to="/sales/list" activeClassName="active">
           <Icon name="shopping cart" />
           Sales
-        </Menu.Item> */}
+        </Menu.Item> 
         <Menu.Item as={NavLink} to="/stock/list" activeClassName="active">
           <Icon name="chart line" />
           Stock

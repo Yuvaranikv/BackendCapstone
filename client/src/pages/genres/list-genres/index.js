@@ -214,7 +214,7 @@ const Genreslist = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            <BookHeader /> 
             <Header as="h2">Genres</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
@@ -232,13 +232,13 @@ const Genreslist = () => {
                 <div class="search-container">
                   <div class="ui ">
                     <div class="ui icon input">
-                      <input
+                      <input style={{borderColor:'orange'}}
                         type="text"
                         placeholder="Search Genres"
                         value={searchText}
                         onChange={handleSearch}
                       />
-                      <i class="search icon"></i>
+                      <i class="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                     <div class="results"></div>
                   </div>
@@ -284,7 +284,7 @@ const Genreslist = () => {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Sl. No</Table.HeaderCell>
-                  <Table.HeaderCell className="sorted ascending">
+                  <Table.HeaderCell>
                     Genres
                   </Table.HeaderCell>
                   {/* <Table.HeaderCell>Genres name</Table.HeaderCell> */}

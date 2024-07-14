@@ -55,7 +55,6 @@ const Saleslist = () => {
     if (selectedBookId) {
       fetchQuantityInStock(selectedBookId); // Fetch quantity in stock when selectedBookId changes
     }
-   
   }, [selectedBookId]);
 
   const fetchSales = async () => {
@@ -100,7 +99,9 @@ const Saleslist = () => {
     //   return;
     // }
     if (parseInt(quantitySold) > parseInt(quantityInStock)) {
-      setQuantityError("Quantity sold should be less than or equal to quantity in stock.");
+      setQuantityError(
+        "Quantity sold should be less than or equal to quantity in stock."
+      );
       return;
     } else {
       setQuantityError("");
@@ -256,56 +257,53 @@ const Saleslist = () => {
 
   const fetchQuantityInStock = async (bookId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/stock/${bookId}`
-      );
-      const data=response.data;
+      const response = await axios.get(`http://localhost:3000/stock/${bookId}`);
+      const data = response.data;
       console.log(response.data);
 
-        if (Array.isArray(data)) {
-        const stock = data.map(item => item.stock);
+      if (Array.isArray(data)) {
+        const stock = data.map((item) => item.stock);
         setQuantityInStock(stock[0] || 0); // Assuming you need the first stock value
       } else {
         setQuantityInStock(data.stock || 0);
       }
-      
+
       console.log(quantityInStock);
-    
     } catch (error) {
       console.error(
         `Error fetching quantity in stock for book ${bookId}:`,
         error
       );
-       // Default to 0 or handle error case
+      // Default to 0 or handle error case
     }
   };
- // Get today's date in the format YYYY-MM-DD
- const today = new Date().toISOString().split('T')[0];
+  // Get today's date in the format YYYY-MM-DD
+  const today = new Date().toISOString().split("T")[0];
 
- const handleSearchBook = async (e) => {
-  setSearchTextBook(e.target.value);
-  if (e.target.value === "") {
-    setFilteredSales(sales);
-  } else {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/sales/books/search?title=${e.target.value}`
-      );
-      const filteredBooks = response.data;
-console.log(filteredBooks);
-      const filteredBookIds = filteredBooks.map((book) => book.book_id);
+  const handleSearchBook = async (e) => {
+    setSearchTextBook(e.target.value);
+    if (e.target.value === "") {
+      setFilteredSales(sales);
+    } else {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/sales/books/search?title=${e.target.value}`
+        );
+        const filteredBooks = response.data;
+        console.log(filteredBooks);
+        const filteredBookIds = filteredBooks.map((book) => book.book_id);
 
-      const newFilteredSales = sales.filter((sale) =>
-        filteredBookIds.includes(sale.bookid)
-      );
+        const newFilteredSales = sales.filter((sale) =>
+          filteredBookIds.includes(sale.bookid)
+        );
 
-      setFilteredSales(newFilteredSales);
-    } catch (error) {
-      console.error("Error searching books:", error);
-      // Handle error appropriately
+        setFilteredSales(newFilteredSales);
+      } catch (error) {
+        console.error("Error searching books:", error);
+        // Handle error appropriately
+      }
     }
-  }
-};
+  };
 
   return (
     <div>
@@ -313,9 +311,12 @@ console.log(filteredBooks);
         <Grid.Row style={{ padding: 0 }}>
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            <Navbar />
-            <SalesHeader />
-            <Header as="h2" style={{marginBottom:5}}> {selectedSale ? "Sales" : "Sales"}</Header>
+             <Navbar />
+            <SalesHeader /> 
+            <Header as="h2" style={{ marginBottom: 5 }}>
+              {" "}
+              {selectedSale ? "Sales" : "Sales"}
+            </Header>
             <Form onSubmit={handleSubmit}>
               <Form.Group>
                 <Form.Field width={4} className="margin-top" required>
@@ -367,15 +368,19 @@ console.log(filteredBooks);
                       Please enter Quantity Sold in numbers
                     </div>
                   )}
-                   {quantityError && (
-                  <div className="ui pointing red basic label">
-                    {quantityError}
-                  </div>
-                )}
+                  {quantityError && (
+                    <div className="ui pointing red basic label">
+                      {quantityError}
+                    </div>
+                  )}
                 </Form.Field>
                 <Form.Field width={4} className="margin-top">
                   <label>Quantity in stock</label>
-                  <input disabled style={{ color: "red",fontWeight: "bold" }} value={quantityInStock} />
+                  <input
+                    disabled
+                    style={{ color: "red", fontWeight: "bold" }}
+                    value={quantityInStock}
+                  />
                 </Form.Field>
                 <Form.Field width={4} className="margin-top" required>
                   <label>Sale Date</label>
@@ -418,17 +423,18 @@ console.log(filteredBooks);
               </Button>
             </Form>
             <div class="ui grid">
-                <div class="twe wide column right-aligned">
+              <div class="twe wide column right-aligned">
                 <div class="search-container">
                   <div class="ui ">
                     <div class="ui icon input">
-                      <input style={{marginBottom:10}}
+                      <input 
+                        style={{ marginBottom: 2 ,borderColor:'orange'}}
                         type="text"
                         placeholder="Search Book"
                         value={searchTextBook}
                         onChange={handleSearchBook}
                       />
-                      <i class="search icon"></i>
+                      <i class="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                     <div class="results"></div>
                   </div>

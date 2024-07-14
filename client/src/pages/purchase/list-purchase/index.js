@@ -262,8 +262,8 @@ const Purchaselist = () => {
         <Grid.Row>
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
-            <Navbar />
-            <PurchaseHeader />
+             <Navbar />
+            <PurchaseHeader /> 
             <Header as="h2" style={{ marginBottom: 5 }}>
               {" "}
               {selectedPurchase ? "Purchase" : "Purchase"}
@@ -367,13 +367,13 @@ const Purchaselist = () => {
                   <div class="ui ">
                     <div class="ui icon input">
                       <input
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 2 ,borderColor:'orange'}}
                         type="text"
                         placeholder="Search Book"
                         value={searchTextBook}
                         onChange={handleSearchBook}
                       />
-                      <i class="search icon"></i>
+                      <i class="search icon" style={{backgroundColor:'orange'}}></i>
                     </div>
                     <div class="results"></div>
                   </div>
