@@ -19,6 +19,7 @@ import bannerImage from "../../../assets/images/add (1).png";
 import bannerImage1 from "../../../assets/images/writer.png";
 import bannerImage2 from "../../../assets/images/apps-add.png";
 import { useNavigate } from "react-router-dom";
+import HomeHeader from "../../home/home-header";
 
 const BooksMenu = () => {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ const BooksMenu = () => {
           <Grid.Column width={2} ></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            {/* <BookHeader /> */}
+            <HomeHeader />
             <Header as="h2">Book</Header>
               <Card.Group itemsPerRow={3} centered>
               <Card onClick={handleBookCardClick} style={{ width: '20%' }}>

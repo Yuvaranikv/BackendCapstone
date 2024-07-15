@@ -18,7 +18,7 @@ import {
   ListItem,
   Segment,
   SegmentInline,
-  GridColumn,
+  GridColumn,Modal
 } from "semantic-ui-react";
 import Navbar from "../../shared/Navbar";
 import * as XLSX from "xlsx";
@@ -27,7 +27,7 @@ import Footer from "../../shared/Footer";
 import HomeHeader from "../home/home-header";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import './styles.css'; // Add this import for CSS
+import "./styles.css"; // Add this import for CSS
 
 const HomePage = () => {
   const [stockData, setStockData] = useState([]);
@@ -38,13 +38,19 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10); // Adjust based on your backend limit
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedBook, setSelectedBook] = useState(null); // State to store the selected book
+  const [modalOpen, setModalOpen] = useState(false); // State to control modal visibility
 
   useEffect(() => {
-    fetchTotalStockData();
-    fetchStockData();
-    fetchBookSalesData();
-    fetchTotalSalesData();
-    fetchTopsellingData();
+    const fetchData = async () => {
+      await fetchTotalStockData();
+      await fetchStockData();
+      await fetchBookSalesData();
+      await fetchTotalSalesData();
+      await fetchTopsellingData();
+    };
+
+    fetchData();
   }, []);
 
   const fetchTotalStockData = async () => {
@@ -52,7 +58,11 @@ const HomePage = () => {
       const response = await axios.get(
         "http://localhost:3000/stock/totalstock"
       );
-      setStockData(response.data);
+      const data = response.data.map((item) => ({
+        ...item,
+        total_stock: item.total_stock === null ? 0 : item.total_stock,
+      }));
+      setStockData(data);
       console.log(response.data);
     } catch (error) {
       console.error("Error fetching stock data:", error);
@@ -62,9 +72,9 @@ const HomePage = () => {
   const fetchBookSalesData = async () => {
     try {
       const response = await axios.get("http://localhost:3000/stock/bookssold");
-      const data = response.data.map(item => ({
+      const data = response.data.map((item) => ({
         ...item,
-        BooksSoldToday: item.BooksSoldToday === null ? 0 : item.BooksSoldToday
+        BooksSoldToday: item.BooksSoldToday === null ? 0 : item.BooksSoldToday,
       }));
       setBookSalesData(data);
       console.log(data);
@@ -78,8 +88,10 @@ const HomePage = () => {
       const response = await axios.get(
         "http://localhost:3000/stock/totalsales"
       );
-      const data=response.data.map(item=>({
-        ...item,TotalSalesToday:item.TotalSalesToday===null?0:item.TotalSalesToday
+      const data = response.data.map((item) => ({
+        ...item,
+        TotalSalesToday:
+          item.TotalSalesToday === null ? 0 : item.TotalSalesToday,
       }));
       setTotalSalesData(data);
       console.log(response.data);
@@ -94,7 +106,7 @@ const HomePage = () => {
         "http://localhost:3000/stock/topsellingbooks"
       );
       setTopSellingData(response.data);
-      console.log(response.data);
+      console.log("top",response.data);
     } catch (error) {
       console.error("Error fetching stock data:", error);
     }
@@ -117,6 +129,24 @@ const HomePage = () => {
     console.log(stockData);
   };
 
+  const handleCardClick = (book) => {
+    setSelectedBook(book); // Set the selected book for modal display
+    setModalOpen(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setSelectedBook(null); // Clear the selected book
+    setModalOpen(false); // Close the modal
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  };
   return (
     <div>
       <Grid columns="equal" style={{ margin: 0 }}>
@@ -129,31 +159,41 @@ const HomePage = () => {
             <Card.Group itemsPerRow={3}>
               {stockData.map((item) => (
                 <Card color="orange" className="fixed-size-card">
-                  <Header as="h2" align="center"style={{ padding:10}}>
-                    Books InStock
+                  <Header as="h2" align="center" style={{ padding: 10 }}>
+                  {item.total_stock}&nbsp;&nbsp;
+                  {/* <span>units</span> */}
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">{item.total_stock}&nbsp;&nbsp;<span>units</span></CardHeader>
+                    <CardHeader align="center">
+                     Books Available In-Stock
+                    </CardHeader>
                   </CardContent>
                 </Card>
               ))}
               {booksalesData.map((item) => (
                 <Card color="blue" className="fixed-size-card">
-                  <Header as="h2" align="center" style={{ padding:10}}>
-                    Books Sold Today
+                  <Header as="h2" align="center" style={{ padding: 10 }}>
+                  {item.BooksSoldToday}&nbsp;&nbsp;
+                  {/* <span>units</span> */}
+                 
                   </Header>
                   <CardContent>
-                    <CardHeader align="center">{item.BooksSoldToday}&nbsp;&nbsp;<span>units</span></CardHeader>
+                    <CardHeader align="center">
+                    Books Sold Today
+                    </CardHeader>
                   </CardContent>
                 </Card>
               ))}
               {totalsalesData.map((item) => (
                 <Card color="green" className="fixed-size-card">
-                  <Header as="h2" align="center" style={{ padding:10}}>
-                    Today's Sales
+                  <Header as="h2" align="center" style={{ padding: 10 }}>
+                  <Icon name="rupee" size="tiny" /> 
+                  {item.TotalSalesToday}
                   </Header>
                   <CardContent>
-                    <CardHeader align="center"><Icon name="rupee sign"></Icon>{item.TotalSalesToday}</CardHeader>
+                    <CardHeader align="center">
+                       Today's Sales
+                    </CardHeader>
                   </CardContent>
                 </Card>
               ))}
@@ -161,28 +201,46 @@ const HomePage = () => {
             <Header as="h2">Top 5 selling books</Header>
             <Card.Group itemsPerRow={5}>
               {topsellingData.map((item) => (
-                <Card key={item.id} className="fixed-size-card zoom-on-hover">
+                <Card key={item.id} className="fixed-size-card zoom-on-hover"  onClick={() => handleCardClick(item)}>
                   <Image
                     src={item.imageURL}
-                   
                     ui={false}
                     className="fixed-size-image"
-                  /> 
+                  />
                   <CardContent>
                     <CardHeader>{item.title}</CardHeader>
                     <CardMeta>{item.author}</CardMeta>
                     <CardDescription>{item.description}</CardDescription>
                   </CardContent>
                   <CardContent extra className="sold-number">
-                    <a>
+                   
                       <Icon name="shopping cart" />
                       {item.total_quantity_sold} Sold
-                    </a>
+                  
                   </CardContent>
                 </Card>
               ))}
             </Card.Group>
-
+            <Modal
+              open={modalOpen}
+              onClose={handleCloseModal}
+              size="small"
+              closeIcon
+            >
+              <Modal.Header>{selectedBook && selectedBook.title}</Modal.Header>
+              <Modal.Content image>
+                <Image src={selectedBook && selectedBook.imageURL} wrapped style={{ width: '200px' }}/>
+                <Modal.Description>
+                  <Header>Author: {selectedBook && selectedBook.name}</Header> {/* Use selectedBook.name for author */}
+                  <p>{selectedBook && selectedBook.description}</p>
+                  <p>Total Quantity Sold: {selectedBook && selectedBook.total_quantity_sold}</p>
+                  <p>ISBN: {selectedBook && selectedBook.ISBN}</p>
+                  <p>Price: {selectedBook && selectedBook.price}</p>
+                  <p>Publication Date: {(selectedBook) && formatDate(selectedBook.publication_date)}</p>
+                  {/* Add more details as needed */}
+                </Modal.Description>
+              </Modal.Content>
+            </Modal>
             <div style={{ marginTop: "50px" }}>
               <Segment>
                 <Header as="h2">Stock Alert</Header>
@@ -193,9 +251,12 @@ const HomePage = () => {
                         <Segment>
                           <Icon name="warning circle" color="red" />
                           {item.title} -{" "}
-                          {item.stock === null
-                            ? "(Stock is empty)"
-                            : `(Only ${item.stock} left)`}
+                          <span style={{ color: "red" }}>
+                            {" "}
+                            {item.stock === null
+                              ? "(Stock is empty)"
+                              : `(Only ${item.stock} left)`}
+                          </span>
                         </Segment>
                       </Grid.Column>
                     ))}

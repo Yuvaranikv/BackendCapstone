@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "semantic-ui-css/semantic.min.css";
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Grid, Header, Segment } from "semantic-ui-react";
+import { Form, Button, Grid, Header, Segment,Icon } from "semantic-ui-react";
 import "./styles.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,6 +24,10 @@ const LoginPage = () => {
         console.log("Redirecting to home page...");
         navigate('/home');
      }
+    //  if(response.status===401)
+    //  {
+    //   toast.error("Username and password not exists");
+    //  }
      else
      toast.error("Username and password not exists");
     } catch (error) {
@@ -39,7 +43,7 @@ const LoginPage = () => {
       <Grid textAlign="right" style={{ height: '100vh' }} verticalAlign="middle">
         <Grid.Column className="login-box">
           <Header as="h2" color="black" textAlign="center">
-            Log-in to your account
+           <Icon name="book"></Icon> Infinite Reads Book Store
           </Header>
           <Form size="large" onSubmit={handleSubmit}>
             <Segment stacked>

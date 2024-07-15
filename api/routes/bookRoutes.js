@@ -92,6 +92,20 @@ router.post('/upload', upload.single('file'), (req, res) => {
   }
 });
 
+// router.post("/upload", upload.single("file"), (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+//     const filePath = `/uploads/${req.file.filename}`;
+//     //const filePath = `'http://localhost:3000/uploads/${req.file.filename}`;
+//     res.status(200).json({ filePath });
+//   } catch (error) {
+//     console.error("Error uploading file:", error);
+//     res.status(500).json({ error: "Failed to upload file" });
+//   }
+// });
+
 router.post("/add", async (req, res) => {
   try {
     const { title, author_id, genre_id, price, publication_date, ISBN, imageURL, description } = req.body;

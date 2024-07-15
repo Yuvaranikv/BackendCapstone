@@ -354,11 +354,11 @@ const Purchaselist = () => {
                   onChange={(e) => setComments(e.target.value)}
                 />
               </Form.Field>
-              <Button color="black" type="submit">
-                {selectedPurchase ? "Update" : "Add"}
+              <Button color="green" type="submit">
+                {selectedPurchase ? <><Icon name="edit"/>Update </> : <><Icon name="plus"/>Add </>}
               </Button>
-              <Button color="black" type="button" onClick={resetForm}>
-                Clear
+              <Button color="brown" type="button" onClick={resetForm}>
+              <Icon name="undo"/> Clear
               </Button>
             </Form>
             <div class="ui grid">
@@ -404,7 +404,7 @@ const Purchaselist = () => {
                     <Table.Cell>{purchase.comments}</Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                       className="btn btn-primary btn-sm light-green-button"
                         color="green"
                         size="mini"
                         onClick={() => handleEditButtonClick(purchase)}
@@ -414,12 +414,12 @@ const Purchaselist = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-danger btn-sm"
+                        className="btn btn-primary btn-sm light-red-button"
                         color="red"
                         size="mini"
                         onClick={() => handleDeleteButtonClick(purchase)}
                       >
-                        <Icon name="trash"></Icon> Delete
+                        <Icon name="delete"></Icon> Delete
                       </Button>
                     </Table.Cell>
                   </Table.Row>

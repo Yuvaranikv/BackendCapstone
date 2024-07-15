@@ -6,15 +6,15 @@ const Book = require("../models/Book");
 router.get("/", async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
   const limit = parseInt(req.query.limit) || 10; // Default limit to 10 items per page
-  let { direction } = req.query;
+  //let { direction } = req.query;
 
   try {
     const offset = (page - 1) * limit;
-    direction = direction === "descend" ? "DESC" : "ASC"; // Default to ASC if direction is invalid or not provided
-    console.log(direction);
+    //direction = direction === "descend" ? "DESC" : "ASC"; // Default to ASC if direction is invalid or not provided
+   // console.log(direction);
     const authors = await Author.findAll({
       where: { isActive: true },
-      order: [["name", direction]],
+      order: [['createdAt', 'DESC']],
       offset: offset,
       limit: limit,
     });
@@ -35,10 +35,10 @@ router.get("/", async (req, res) => {
 router.get("/all", async (req, res) => {
   let { direction } = req.query;
   try {
-    direction = direction === "descend" ? "DESC" : "ASC"; 
+    //direction = direction === "descend" ? "DESC" : "ASC"; 
     const authors = await Author.findAll({
       where: { isActive: true },
-      order: [["name", direction]],
+      order: [['createdAt', 'DESC']],
       attributes: ["author_id", "name"],
     });
     // Fetch total count of authors

@@ -27,6 +27,7 @@ import "react-toastify/dist/ReactToastify.css";
 import _ from "lodash";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import HomeHeader from "../../home/home-header";
 
 const AddNewBook = () => {
   const [books, setBooks] = useState([]);
@@ -117,12 +118,14 @@ const AddNewBook = () => {
           }
         );
         console.log("Updated Book:", response.data);
+        // toast.success("Book updated successfully");
         fetchBooks();
         setBookName("");
         setPrice("");
         setPdate(null);
         setSelectedBook(null);
         setOpen(false);
+        setSelectedFile(null);
         toast.success("Book updated successfully");
       } catch (error) {
         console.error("Error updating Book:", error);
@@ -166,6 +169,7 @@ const AddNewBook = () => {
     setCoverPage(book.imageURL);
     console.log(coverPage);
     setOpen(true);
+    setSelectedFile(null);
   };
 
   const handleDeleteButtonClick = async (book) => {
@@ -286,7 +290,7 @@ const AddNewBook = () => {
   };
 
   const handleFileUpload = async () => {
-    // if (!file) {
+    // if (!selectedFile) {
     //   toast.error("Please select a file to upload.");
     //   return;
     // }
@@ -300,6 +304,7 @@ const AddNewBook = () => {
         formData
       );
       const filePath = response.data.filePath;
+      console.log(response.data.filePath);
       setCoverPage(`http://localhost:3000${filePath}`);
       toast.success("File uploaded successfully");
     } catch (error) {
@@ -307,6 +312,7 @@ const AddNewBook = () => {
       toast.error("Error uploading file");
     }
   };
+
 
   const sections = [
     {
@@ -319,6 +325,11 @@ const AddNewBook = () => {
     { key: "Author", content: "Add", active: true },
   ];
 
+  const handleCloseModal = () => {
+    setOpen(false);
+    setSelectedFile(null); // Reset selectedFile when modal closes
+  };
+
   const today = new Date();
 
   return (
@@ -328,14 +339,14 @@ const AddNewBook = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader />
+            <HomeHeader/>
             <Header as="h2">Book</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
                   <button
-                    class="ui labeled icon black button"
+                    class="ui labeled icon green button"
                     onClick={() => setOpen(true)}
                   >
                     <i class="plus icon"></i>Add Book
@@ -346,13 +357,17 @@ const AddNewBook = () => {
                 <div class="search-container">
                   <div class="ui ">
                     <div class="ui icon input">
-                      <input style={{borderColor:'orange'}}
+                      <input
+                        style={{ borderColor: "orange" }}
                         type="text"
                         placeholder="Search Book"
                         value={searchText}
                         onChange={handleSearch}
                       />
-                      <i class="search icon" style={{backgroundColor:'orange'}}></i>
+                      <i
+                        class="search icon"
+                        style={{ backgroundColor: "orange" }}
+                      ></i>
                     </div>
                     <div class="results"></div>
                   </div>
@@ -362,7 +377,7 @@ const AddNewBook = () => {
             <Modal
               closeIcon
               open={open}
-              onClose={() => setOpen(false)}
+              onClose={handleCloseModal}
               size="small"
               style={{ height: "90vh" }}
             >
@@ -374,7 +389,7 @@ const AddNewBook = () => {
                   <Form onSubmit={handleSubmit}>
                     <Form.Field>
                       <input
-                        placeholder="Enter Book Name"
+                        placeholder="Add Book Name"
                         value={bookName}
                         onChange={(e) => setBookName(e.target.value)}
                         error={
@@ -394,7 +409,7 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <Dropdown
-                        placeholder="Select Author"
+                        placeholder="Choose Author"
                         fluid
                         search
                         selection
@@ -422,7 +437,7 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <Dropdown
-                        placeholder="Select Genres"
+                        placeholder="Choose Genres"
                         fluid
                         search
                         selection
@@ -453,7 +468,7 @@ const AddNewBook = () => {
                         selected={pdate}
                         onChange={(date) => setPdate(date)}
                         dateFormat="dd/MM/yyyy"
-                        placeholderText="Select Publication Date"
+                        placeholderText="Choose Publication Date"
                         className="custom-datepicker"
                         maxDate={today} // Disable future dates
                         error={
@@ -473,7 +488,7 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <input
-                        placeholder="Enter ISBN"
+                        placeholder="Add Book Code"
                         value={isbnNo}
                         onChange={(e) => setIsbnNo(e.target.value)}
                         error={
@@ -493,7 +508,7 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <TextArea
-                        placeholder="Enter Description"
+                        placeholder="Add Description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                       />
@@ -501,7 +516,7 @@ const AddNewBook = () => {
                     <Form.Field>
                       <div class="ui right labeled input">
                         <label for="amount" class="ui label">
-                          $
+                         Rs
                         </label>
                         <input
                           type="text"
@@ -529,14 +544,14 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <input type="file" onChange={handleFileChange} />
-                      <input
+                      {/* <input
                         placeholder="Cover Page URL"
                         value={coverPage}
                         readOnly // Make it read-only to display only
-                      />
+                      /> */}
                     </Form.Field>
                     <Button color="green" type="submit">
-                      {selectedBook ? "Update Book" : "Add Book"}
+                      {selectedBook ? <><Icon name="edit"/>Update Book</> : <><Icon name="plus"/>Add Book</> }
                     </Button>
                   </Form>
                 </ModalDescription>
@@ -546,10 +561,10 @@ const AddNewBook = () => {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Sl. No</Table.HeaderCell>
+                  <Table.HeaderCell>Cover Page</Table.HeaderCell>
                   <Table.HeaderCell sorted={direction} onClick={handleSort}>
                     Book
                   </Table.HeaderCell>
-                  <Table.HeaderCell>Cover Page</Table.HeaderCell>
                   <Table.HeaderCell>Author</Table.HeaderCell>
                   <Table.HeaderCell>Genres</Table.HeaderCell>
                   <Table.HeaderCell>Price</Table.HeaderCell>
@@ -562,8 +577,6 @@ const AddNewBook = () => {
                 {filteredBooks.map((book, index) => (
                   <Table.Row key={book.book_id}>
                     <Table.Cell>{(page - 1) * pageSize + index + 1}</Table.Cell>{" "}
-                    {/* Display serial number */}
-                    <Table.Cell>{book.title}</Table.Cell>
                     <Table.Cell style={{ width: "100px" }}>
                       <img
                         className="zoom-on-hover"
@@ -572,15 +585,15 @@ const AddNewBook = () => {
                         style={{ width: "50px", height: "70px" }}
                       />
                     </Table.Cell>
+                    {/* Display serial number */}
+                    <Table.Cell>{book.title}</Table.Cell>
                     <Table.Cell>{book.Author?.name}</Table.Cell>{" "}
-                    {/* Optional chaining here */}
                     <Table.Cell>{book.Genres?.genre_name}</Table.Cell>{" "}
-                    {/* Optional chaining here */}
                     <Table.Cell>{book.price}</Table.Cell>
                     <Table.Cell>{formatDate(book.publication_date)}</Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm light-green-button"
                         color="green"
                         size="mini" // Set the size here
                         onClick={() => handleEditButtonClick(book)}
@@ -590,7 +603,7 @@ const AddNewBook = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm light-red-button"
                         color="red"
                         size="mini" // Set the size here
                         onClick={() => handleDeleteButtonClick(book)}

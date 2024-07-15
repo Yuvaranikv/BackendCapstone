@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET all sales
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
     const sales = await Sales.findAll({
       where: { isActive: true },

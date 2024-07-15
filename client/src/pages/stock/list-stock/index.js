@@ -254,7 +254,7 @@ const ListStock = () => {
                     className="ui labeled icon green button"
                     onClick={exportToExcel}
                   >
-                    <Icon name="file excel outline"></Icon>Export to Excel
+                    <Icon name="file excel outline"></Icon>Download
                   </Button>
                 </Grid.Column>
               </Grid.Row>

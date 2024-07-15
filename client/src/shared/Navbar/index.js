@@ -63,7 +63,7 @@ const Navbar = () => {
                 avatar
                 spaced="right"
               />
-              Admin
+              shreena
             </span>
           }
           options={dropdownOptions}

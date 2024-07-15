@@ -135,10 +135,11 @@ const Saleslist = () => {
           comments: comments,
         });
         console.log("Added new sale:", response.data);
+        toast.success("Sale added successfully");
         fetchSales();
         resetForm();
         setOpen(false);
-        toast.success("Sale added successfully");
+       // toast.success("Sale added successfully");
       } catch (error) {
         console.error("Error adding sale:", error);
         toast.error("Error adding sale");
@@ -415,11 +416,11 @@ const Saleslist = () => {
                   onChange={(e) => setComments(e.target.value)}
                 />
               </Form.Field>
-              <Button color="black" type="submit">
-                {selectedSale ? "Update" : "Add"}
+              <Button color="green" type="submit">
+                {selectedSale ? <><Icon name="edit"/>Update </> : <><Icon name="plus"/>Add </>}
               </Button>
-              <Button color="black" type="button" onClick={resetForm}>
-                Clear
+              <Button color="brown" type="button" onClick={resetForm}>
+              <Icon name="undo"/>Clear
               </Button>
             </Form>
             <div class="ui grid">
@@ -465,7 +466,7 @@ const Saleslist = () => {
                     <Table.Cell>{sale.comments}</Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                         className="btn btn-primary btn-sm light-green-button"
                         color="green"
                         size="mini"
                         onClick={() => handleEditButtonClick(sale)}
@@ -475,7 +476,7 @@ const Saleslist = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                         className="btn btn-primary btn-sm light-red-button"
                         color="red"
                         size="mini"
                         onClick={() => handleDeleteButtonClick(sale)}

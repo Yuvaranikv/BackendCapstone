@@ -24,6 +24,7 @@ import "./styles.css";
 import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import HomeHeader from "../../home/home-header";
 
 const Genreslist = () => {
   const [genres, setGenres] = useState([]);
@@ -31,7 +32,7 @@ const Genreslist = () => {
   const [selectedGenres, setSelectedGenres] = useState(null);
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [deleteGenresId, setDeleteGenresId] = useState(null);
@@ -214,14 +215,14 @@ const Genreslist = () => {
           <Grid.Column width={2} style={{ padding: 0 }}></Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
             <Navbar />
-            <BookHeader /> 
+           <HomeHeader/>
             <Header as="h2">Genres</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
-                  <button
-                    class="ui labeled icon black button"
+                  <button 
+                    class="ui labeled icon green button"
                     onClick={() => setOpen(true)}
                   >
                     <i class="plus icon"></i>Add Genres
@@ -299,7 +300,7 @@ const Genreslist = () => {
                     <Table.Cell>{genres.genre_name}</Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm light-green-button"
                         color="green"
                         size="mini" // Set the size here
                         onClick={() => handleEditButtonClick(genres)}
@@ -309,7 +310,7 @@ const Genreslist = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm light-red-button"
                         color="red"
                         size="mini" // Set the size here
                         onClick={() => handleDeleteButtonClick(genres)}

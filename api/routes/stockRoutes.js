@@ -97,7 +97,9 @@ router.get("/topsellingbooks", async (req, res) => {
   try {
     const query = `
     SELECT b.book_id,    b.title,    b.author_id,    b.genre_id,    b.price,    b.publication_date,    b.ISBN,    b.imageURL,    b.description,    b.isActive,    b.createdAt,
-    b.updatedAt,SUM(s.quantity_sold) AS total_quantity_sold FROM books AS b JOIN sales AS s ON b.book_id = s.bookid
+    b.updatedAt,SUM(s.quantity_sold) AS total_quantity_sold,a.name FROM books AS b 
+    JOIN sales AS s ON b.book_id = s.bookid
+    join authors as a on a.author_id=b.author_id
     GROUP BY b.book_id , b.title , b.author_id , b.genre_id , b.price , b.publication_date , b.ISBN , b.imageURL , b.description , b.isActive , b.createdAt , b.updatedAt
     ORDER BY total_quantity_sold DESC
     LIMIT 5;

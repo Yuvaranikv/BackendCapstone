@@ -23,6 +23,7 @@ import Footer from "../../../shared/Footer";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import _ from "lodash";
+import HomeHeader from "../../home/home-header";
 
 const AuthorsList = () => {
   const [authors, setAuthors] = useState([]);
@@ -244,14 +245,14 @@ const AuthorsList = () => {
           </Grid.Column>
           <Grid.Column stretched style={{ padding: 0 }}>
              <Navbar />
-            <BookHeader /> 
+            <HomeHeader />
             <Header as="h2">Author</Header>
             <Breadcrumb icon="right angle" sections={sections} />
             <div class="ui grid">
               <div class="eight wide column left-aligned">
                 <div class="add-book-button-container">
                   <button
-                    class="ui labeled icon black button"
+                    class="ui labeled icon green button"
                     onClick={() => setOpen(true)}
                   >
                     <i class="plus icon"></i>Add Author
@@ -338,7 +339,7 @@ const AuthorsList = () => {
                     <Table.Cell>{author.biography}</Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                       className="btn btn-primary btn-sm light-green-button"
                         color="green"
                         size="mini"
                         onClick={() => handleEditButtonClick(author)}
@@ -348,7 +349,7 @@ const AuthorsList = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        className="btn btn-primary btn-sm"
+                        className="btn btn-primary btn-sm light-red-button"
                         color="red"
                         size="mini"
                         onClick={() => handleDeleteButtonClick(author)}
