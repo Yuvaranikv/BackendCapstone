@@ -266,7 +266,7 @@ const Purchaselist = () => {
             <PurchaseHeader /> 
             <Header as="h2" style={{ marginBottom: 5 }}>
               {" "}
-              {selectedPurchase ? "Purchase" : "Purchase"}
+              {selectedPurchase ? "Purchase(Adding New Books to Store Inventory) " : "Purchase(Adding New Books to Store Inventory)"}
             </Header>
             <Form onSubmit={handleSubmit}>
               <Form.Group>

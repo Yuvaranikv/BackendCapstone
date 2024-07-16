@@ -36,7 +36,9 @@ router.get("/", async (req, res) => {
       ],
     });
 
-    const totalBooksCount = await Book.count();
+    const totalBooksCount = await Book.count({
+      where: { isActive: true }
+    });
 
     res.json({
       books: books,
@@ -58,7 +60,7 @@ router.get('/all', async (req, res) => {
       ],
     });
 
-    const totalBookCount = await Book.count();
+    const totalBookCount = await Book.count({ where: { isActive: true }});
 
     res.json({
       books: books,
@@ -128,6 +130,7 @@ router.post("/add", async (req, res) => {
    // res.status(201).json(newBook);
     // Fetch all books ordered by createdAt in descending order
     const orderedBooks = await Book.findAll({
+      where: { isActive: true },
       order: [['createdAt', 'DESC']]
     });
 

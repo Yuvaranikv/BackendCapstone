@@ -126,10 +126,11 @@ const AddNewBook = () => {
         setSelectedBook(null);
         setOpen(false);
         setSelectedFile(null);
+        setCoverPage([]);
         toast.success("Book updated successfully");
       } catch (error) {
         console.error("Error updating Book:", error);
-        toast.error("Error updating Book");
+       // toast.error("Error updating Book");
       }
     } else {
       try {
@@ -149,10 +150,11 @@ const AddNewBook = () => {
         setPrice("");
         setPdate(null);
         setOpen(false);
+        setCoverPage([]);
         toast.success("Book added successfully");
       } catch (error) {
         console.error("Error adding Book:", error);
-        toast.error("Error adding Book");
+       // toast.error("Error adding Book");
       }
     }
   };
@@ -283,10 +285,10 @@ const AddNewBook = () => {
     }
   };
 
-  const handleFileChange = async (e) => {
+  const handleFileChange =  (e) => {
     setSelectedFile(e.target.files[0]);
     console.log(e.target.files[0]);
-    await handleFileUpload();
+    // await handleFileUpload();
   };
 
   const handleFileUpload = async () => {
@@ -301,15 +303,19 @@ const AddNewBook = () => {
     try {
       const response = await axios.post(
         "http://localhost:3000/books/upload",
-        formData
-      );
+        formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+    });
       const filePath = response.data.filePath;
       console.log(response.data.filePath);
       setCoverPage(`http://localhost:3000${filePath}`);
+      console.log(coverPage);
       toast.success("File uploaded successfully");
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Error uploading file");
+     // toast.error("Error uploading file");
     }
   };
 
@@ -544,6 +550,7 @@ const AddNewBook = () => {
                     </Form.Field>
                     <Form.Field>
                       <input type="file" onChange={handleFileChange} />
+                      <button onClick={handleFileUpload}>Upload</button>
                       {/* <input
                         placeholder="Cover Page URL"
                         value={coverPage}
